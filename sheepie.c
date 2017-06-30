@@ -1,8 +1,6 @@
 #include "lib/neslib.h"
 #include "lib/boilerplate.h"
 #include "bin/build_info.h"
-#include "src/rom_0.h"
-#include "src/rom_1.h"
 
 // Suggestion: Define smart names for your banks and use defines like this. 
 // This is just to make a clear example, and I didn't want to suggest using bank #s directly.
@@ -81,15 +79,7 @@ void main(void) {
 	while(1) {
 		currentPadState = pad_trigger(0);
 		if (currentPadState & PAD_A) {
-			showMessageA = !showMessageA;
-			if (showMessageA) {
-				set_prg_bank(ROM_0);
-				set_message_from_rom_0();
-			} else {
-				set_prg_bank(ROM_1);
-				set_message_from_rom_1();
-			}
-			write_screen_buffer(2, 15, currentMessage);
+
 			sfx_play(SFX_BOING, 0);
 		}
 
