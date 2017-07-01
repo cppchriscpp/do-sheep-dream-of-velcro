@@ -7,7 +7,7 @@
 ### USER EDITABLE STUFF STARTS HERE
 
 ROM_NAME=sheepie
-OBJECTS_TO_BUILD=levels/processed/lvl1_tiles.asm $(ROM_NAME).c bin/build_info.h bin/level_manip.o bin/crt0.o bin/$(ROM_NAME).o
+OBJECTS_TO_BUILD=levels/processed/lvl1_tiles.asm $(ROM_NAME).c bin/build_info.h bin/movement.o bin/level_manip.o bin/crt0.o bin/$(ROM_NAME).o
 
 ROOT_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 MAIN_COMPILER=./tools/cc65/bin/cc65

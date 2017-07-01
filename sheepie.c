@@ -3,6 +3,7 @@
 #include "bin/build_info.h"
 #include "src/globals.h"
 #include "src/level_manip.h"
+#include "src/movement.h"
 #include "levels/processed/lvl1_tiles.h"
 
 // Suggestion: Define smart names for your banks and use defines like this. 
@@ -13,6 +14,7 @@
 #define CHR_BANK_1 1
 
 #define PRG_LEVELMANIP 1
+#define PRG_MOVEMENT 1
 #define PRG_FIRST_LEVEL 2
 
 #define SONG_TITLE 0
@@ -66,9 +68,11 @@ unsigned char currentPadState, lastPadState, staticPadState, gameState;
 unsigned char i, j;
 unsigned char currentLevelId, playerOverworldPosition;
 
-unsigned char magnetX, magnetY, magnetPos, magnetPosAbs, magnetId, magnetScratch, sheepXVel, sheepYVel, currentSpriteId;
-unsigned char sheepXlo, sheepYlo;
-unsigned int sheepX, sheepY, magnetXhi, magnetYhi;
+unsigned char magnetX, magnetY, magnetPos, magnetPosAbs, magnetId, magnetScratch,currentSpriteId;
+unsigned char sheepXlo, sheepYlo, sheepXRlo, sheepYBlo;
+int sheepX, sheepY, sheepXnext, sheepYnext, magnetXhi, magnetYhi;
+int sheepXVel, sheepYVel;
+unsigned char touchingVelcro;
 
 // Local to this file.
 static unsigned char playMusic;
@@ -134,8 +138,8 @@ void show_level() {
 	// Load up the data into currentLevel
 	set_prg_bank(PRG_FIRST_LEVEL + currentLevelId);
 	playerOverworldPosition = *(char*)(lvl_details);
-	sheepX = (*(char*)(lvl_details+1)) << 2;
-	sheepY = *(char*)(lvl_details+2) << 2;
+	sheepX = (*(char*)(lvl_details+1)) << 4;
+	sheepY = *(char*)(lvl_details+2) << 4;
 
 	ppu_off();
 	clear_screen();
@@ -212,32 +216,21 @@ void do_magnet_movement() {
 }
 
 void do_sheep_movement() {
-	// If you're not holding A, the sheep is holding on for dear life!
-	if (currentPadState & PAD_A) {
-		// Sheepy let go... okay, let's start moving...
+	set_prg_bank(PRG_MOVEMENT);
+	do_banked_movement();
+}
 
-		// Magnet is lo-res by default... bring it on up. (Just makes calculations easier...)
-		magnetXhi = magnetX << 4;
-		magnetYhi = magnetY << 4; 
-		
-		// TODO: This should be velocity based, and be very slippery if the sheep isn't velcroed down
-		// (I sound like a complete crazy person, don't I? No sheep were harmed in the making of this logic.)
-		if (sheepX > magnetXhi) {
-			sheepX -= 2;
-		} else {
-			sheepX += 2;
-		}
-
-		if (sheepY > magnetYhi) {
-			sheepY -= 2;
-		} else {
-			sheepY += 2;
-		}
-
+unsigned char test_collision(unsigned char tileId) {
+	tileId = tileId & 0x3f;
+	switch (tileId) {
+		case 57: 
+			touchingVelcro = 1;
+			return 0;
+		case 58:
+			return 1;
+		default:
+			return 0;
 	}
-
-	sheepXlo = sheepX >> 4;
-	sheepYlo = sheepY >> 4;
 }
 
 // Main entry point for the application.

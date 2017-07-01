@@ -2,6 +2,8 @@
 	"files.associations": {
 		"stdint.h": "c",
 		"iso646.h": "c",
-		"neslib.h": "c"
+		"neslib.h": "c",
+		"sheepie.c": "cpp",
+		"globals.h": "c"
 	}
 }
