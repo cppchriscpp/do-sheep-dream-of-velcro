@@ -7,7 +7,7 @@
     "tasks": [
         {
             "taskName": "build",
-            "args": ["all", "run"],
+            "args": ["clean", "all", "run"],
             "suppressTaskName": true,
             "problemMatcher": {
                 "owner": "asm",

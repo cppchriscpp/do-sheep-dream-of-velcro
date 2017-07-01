@@ -7,70 +7,112 @@ music_music_data:
 	.word @song0ch0,@song0ch1,@song0ch2,@song0ch3,@song0ch4,307,256
 
 @instruments:
-	.byte $b0 ;instrument $00
+	.byte $b0 ;instrument $02
 	.word @env1,@env0,@env0
 	.byte $00
-	.byte $30 ;instrument $01
-	.word @env2,@env0,@env3
+	.byte $b0 ;instrument $16
+	.word @env2,@env0,@env0
+	.byte $00
+	.byte $30 ;instrument $2c
+	.word @env3,@env6,@env0
+	.byte $00
+	.byte $30 ;instrument $2d
+	.word @env4,@env7,@env0
+	.byte $00
+	.byte $b0 ;instrument $31
+	.word @env5,@env8,@env9
 	.byte $00
 
 @samples:
 @env0:
 	.byte $c0,$00,$00
 @env1:
-	.byte $c8,$c5,$c3,$c2,$c1,$02,$c0,$00,$06
+	.byte $cf,$ce,$cd,$cc,$cb,$ca,$cb,$cc,$cd,$ce,$cf,$00,$00
 @env2:
-	.byte $c1,$c2,$c1,$c0,$00,$03
+	.byte $c8,$c6,$c5,$c4,$00,$03
 @env3:
-	.byte $d0,$eb,$f5,$f2,$00,$03
+	.byte $cd,$cb,$c9,$c7,$c6,$c5,$c5,$c4,$c4,$c3,$c3,$c2,$02,$c0,$00,$0d
+@env4:
+	.byte $c8,$c3,$c2,$c2,$c1,$02,$c0,$00,$06
+@env5:
+	.byte $c7,$c9,$c6,$c2,$c1,$c0,$00,$05
+@env6:
+	.byte $c0,$c0,$c1,$c1,$c2,$00,$04
+@env7:
+	.byte $c0,$c8,$cb,$cd,$ce,$00,$04
+@env8:
+	.byte $c0,$c1,$00,$01
+@env9:
+	.byte $ff,$00,$00
 
 
 @song0ch0:
-	.byte $fb,$03
+	.byte $fb,$05
 @song0ch0loop:
 @ref0:
-	.byte $80,$32,$8d,$3a,$85,$40,$85,$3a,$8d,$3c,$85,$40,$85,$3c,$8d,$3a
-	.byte $85,$32,$85,$3a,$9d
+	.byte $80,$33,$01,$3b,$01,$3c,$00,$3b,$01,$37,$00,$85,$28,$00,$29,$00
+	.byte $8d
 @ref1:
-	.byte $32,$8d,$3a,$85,$40,$85,$3a,$8d,$3c,$85,$40,$85,$3c,$8d,$40,$85
-	.byte $3a,$85,$38,$8d,$32,$8d
+	.byte $33,$01,$3b,$01,$3c,$00,$3b,$01,$37,$00,$85,$28,$00,$29,$00,$8d
+@ref2:
+	.byte $33,$01,$3b,$01,$40,$00,$3b,$00,$85,$37,$01,$3d,$01,$44,$00,$3d
+	.byte $00,$85
+@ref3:
+	.byte $33,$01,$3b,$01,$40,$00,$3b,$00,$85,$33,$01,$31,$01,$33,$00,$89
 	.byte $fd
 	.word @song0ch0loop
 
 @song0ch1:
 @song0ch1loop:
-@ref2:
-	.byte $82,$1a,$8d,$22,$85,$28,$85,$22,$8d,$24,$85,$28,$85,$24,$8d,$22
-	.byte $85,$1a,$85,$22,$9d
-@ref3:
-	.byte $1a,$8d,$22,$85,$28,$85,$22,$8d,$24,$85,$28,$85,$24,$8d,$28,$85
-	.byte $22,$85,$20,$8d,$1a,$8d
+@ref4:
+	.byte $82,$1b,$01,$23,$01,$24,$00,$23,$01,$1f,$00,$85,$10,$00,$11,$00
+	.byte $8d
+@ref5:
+	.byte $1b,$01,$23,$01,$24,$00,$23,$01,$1f,$00,$85,$10,$00,$11,$00,$8d
+@ref6:
+	.byte $1b,$01,$23,$01,$28,$00,$23,$00,$85,$1f,$01,$25,$01,$2c,$00,$25
+	.byte $00,$85
+@ref7:
+	.byte $1b,$01,$23,$01,$28,$00,$23,$00,$85,$1b,$01,$19,$01,$1b,$00,$89
 	.byte $fd
 	.word @song0ch1loop
 
 @song0ch2:
 @song0ch2loop:
-@ref4:
-	.byte $f9,$85
-@ref5:
-	.byte $f9,$85
+@ref8:
+	.byte $88,$32,$8d,$2c,$8d,$32,$85,$32,$85,$2c,$8d
+@ref9:
+	.byte $32,$8d,$2c,$8d,$32,$85,$32,$85,$2c,$8d
+	.byte $ff,$0a
+	.word @ref9
+	.byte $ff,$0a
+	.word @ref9
 	.byte $fd
 	.word @song0ch2loop
 
 @song0ch3:
 @song0ch3loop:
-@ref6:
-	.byte $f9,$85
-@ref7:
-	.byte $f9,$85
+@ref12:
+	.byte $86,$09,$09,$08,$85,$84,$08,$85,$86,$08,$85,$08,$85,$08,$85,$84
+	.byte $08,$8d
+	.byte $ff,$0e
+	.word @ref12
+	.byte $ff,$0e
+	.word @ref12
+	.byte $ff,$0e
+	.word @ref12
 	.byte $fd
 	.word @song0ch3loop
 
 @song0ch4:
 @song0ch4loop:
-@ref8:
-	.byte $f9,$85
-@ref9:
-	.byte $f9,$85
+@ref16:
+	.byte $bf
+@ref17:
+	.byte $bf
+@ref18:
+	.byte $bf
+@ref19:
+	.byte $bf
 	.byte $fd
 	.word @song0ch4loop
