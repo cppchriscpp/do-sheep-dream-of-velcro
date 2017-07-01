@@ -73,7 +73,7 @@ if (outFile === null) {
 
 	if (!fs.existsSync(fileDir)) {
 		verbose('Making directory for output: "' + fileDir + '"');
-		fs.mkDir(fileDir);
+		fs.mkdir(fileDir);
 	}
 }
 
