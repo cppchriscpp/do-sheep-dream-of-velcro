@@ -12,6 +12,9 @@ tools/famitone2/*
 !tools/famitone2/README.md
 bin/*
 !bin/empty
+!tools/level-converter
+levels/processed
+!levels/processed/empty
 
 *.o
 *.nes

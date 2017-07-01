@@ -1,6 +1,7 @@
 {
 	"files.associations": {
 		"stdint.h": "c",
-		"iso646.h": "c"
+		"iso646.h": "c",
+		"neslib.h": "c"
 	}
 }

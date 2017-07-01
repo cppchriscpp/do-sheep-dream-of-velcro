@@ -18,11 +18,26 @@
 // This file defines globals that can be used all over. You'll want common things in here, as the NES has very, very
 // limited ram. 
 extern unsigned char currentPadState, lastPadState, staticPadState;
-extern unsigned char i;
-extern char currentMessage[16];
+extern unsigned char i, j;
 extern unsigned char gameState;
+extern unsigned char currentLevelId, playerOverworldPosition;
 
 extern unsigned char magnetX, magnetY, sheepXVel, sheepYVel;
 extern unsigned int sheepX, sheepY;
 
 extern unsigned char game_palette[16];
+
+extern char screenBuffer[0x30];
+extern unsigned char currentLevel[256];
+extern const char lvl_details[4];
+
+
+// FIXME: Need a lot more of these
+#pragma zpsym ("currentPadState")
+#pragma zpsym ("staticPadState")
+#pragma zpsym ("lastPadState")
+#pragma zpsym ("i")
+#pragma zpsym ("j")
+#pragma zpsym ("currentLevelId")
+#pragma zpsym ("playerOverworldPosition")
+// #pragma zpsym ("FRAME_COUNTER")

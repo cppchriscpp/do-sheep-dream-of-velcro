@@ -2,6 +2,8 @@
 #include "lib/boilerplate.h"
 #include "bin/build_info.h"
 #include "src/globals.h"
+#include "src/level_manip.h"
+#include "levels/processed/lvl1_tiles.h"
 
 // Suggestion: Define smart names for your banks and use defines like this. 
 // This is just to make a clear example, and I didn't want to suggest using bank #s directly.
@@ -10,7 +12,16 @@
 #define CHR_BANK_0 0
 #define CHR_BANK_1 1
 
+#define PRG_LEVELMANIP 1
+#define PRG_FIRST_LEVEL 2
+
 #define SONG_TITLE 0
+
+// TODO: Why on earth is this necessary?
+#pragma bssseg (push,"BSS")
+#pragma dataseg(push,"BSS")
+unsigned char currentLevel[256];
+
 
 // FIXME: Put me in a freakin bank, ya fool
 const unsigned char sine[256] = {
@@ -52,7 +63,8 @@ const unsigned char sine[256] = {
 #pragma bssseg (push,"ZEROPAGE")
 #pragma dataseg(push,"ZEROPAGE")
 unsigned char currentPadState, lastPadState, staticPadState, gameState;
-unsigned char i;
+unsigned char i, j;
+unsigned char currentLevelId, playerOverworldPosition;
 
 unsigned char magnetX, magnetY, magnetPos, magnetPosAbs, magnetId, magnetScratch, sheepXVel, sheepYVel, currentSpriteId;
 unsigned char sheepXlo, sheepYlo;
@@ -62,7 +74,7 @@ unsigned int sheepX, sheepY, magnetXhi, magnetYhi;
 static unsigned char playMusic;
 static unsigned char chrBank;
 static unsigned char mirrorMode;
-static char screenBuffer[20];
+char screenBuffer[0x30];
 #pragma bssseg (pop)
 #pragma dataseg(pop)
 
@@ -73,6 +85,12 @@ void put_str(unsigned int adr, const char *str) {
 		if(!*str) break;
 		vram_put((*str++)-0x20);//-0x20 because ASCII code 0x20 is placed in tile 0 of the CHR
 	}
+}
+
+void clear_screen() {
+	// Clear the screen to start
+	vram_adr(0x2000);
+	vram_fill(0, 0x0400);
 }
 
 void write_screen_buffer(unsigned char x, unsigned char y, char* data) {
@@ -112,11 +130,25 @@ void show_title() {
 
 void show_level() {
 	magnetPos = 0;
-	sheepX = 800;
-	sheepY = 800;
+
+	// Load up the data into currentLevel
+	set_prg_bank(PRG_FIRST_LEVEL + currentLevelId);
+	playerOverworldPosition = *(char*)(lvl_details);
+	sheepX = (*(char*)(lvl_details+1)) << 2;
+	sheepY = *(char*)(lvl_details+2) << 2;
+
 	ppu_off();
+	clear_screen();
 	pal_bg(game_palette);
 	pal_spr(game_palette);
+
+
+	// NOTE: Yes, this says lvl1 - it'll line up with whatever we get though.
+	memcpy(currentLevel, lvl1 + (playerOverworldPosition << 8), 256);
+
+	set_prg_bank(PRG_LEVELMANIP);
+	banked_draw_level();
+
 	ppu_on_all();
 }
 
@@ -216,6 +248,7 @@ void main(void) {
 	set_chr_bank_0(CHR_BANK_0);
 	set_chr_bank_1(CHR_BANK_1);
 	gameState = GAME_STATE_INIT;
+	currentLevelId = 0;
 
 
 	// Now we wait for input from the user, and do dumb things!
