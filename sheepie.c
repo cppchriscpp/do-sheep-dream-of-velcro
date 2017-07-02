@@ -18,6 +18,7 @@
 #define PRG_FIRST_LEVEL 2
 
 #define SONG_TITLE 0
+#define SONG_GAME_1 1
 
 // TODO: Why on earth is this necessary?
 #pragma bssseg (push,"BSS")
@@ -131,6 +132,7 @@ void show_title() {
 		ppu_wait_nmi();
 	}
 	animate_fadeout(5);
+	music_play(SONG_GAME_1);
 	music_pause(1);
 
 }
@@ -151,6 +153,9 @@ void show_level_finished() {
 }
 
 void show_level_failed() {
+	// Reset song
+	music_play(SONG_GAME_1);
+	music_pause(1);
 	animate_fadeout(5);
 	ppu_off();
 	pal_col(1,0x16);//set dark red color
@@ -191,6 +196,7 @@ void show_level() {
 
 	ppu_on_all();
 	animate_fadein(5);
+	music_pause(0);
 
 }
 
