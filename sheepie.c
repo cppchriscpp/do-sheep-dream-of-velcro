@@ -159,6 +159,28 @@ void show_level_finished() {
 	ppu_on_all();
 }
 
+void show_game_finished() {
+	music_pause(1);
+	animate_fadeout(5);
+	ppu_off();
+	pal_col(1,0x16);//set dark red color
+	pal_col(17,0x16);
+
+	clear_screen();
+	put_str(NTADR_A(8, 12), "You win!");
+	put_str(NTADR_A(8, 14), "The ending sucks");
+	ppu_on_bg();
+	animate_fadein(5);
+	while (!(pad_trigger(0) & PAD_START)) {
+		ppu_wait_nmi();
+	}
+	animate_fadeout(5);
+	ppu_off();
+	clear_screen();
+	animate_fadein(1);
+}
+
+
 void show_level_failed() {
 	sfx_play(SFX_BOOM, 0);
 	// Reset song
@@ -338,6 +360,9 @@ void main(void) {
 		} else if (gameState == GAME_STATE_LEVEL_FAILED) {
 			show_level_failed();
 			gameState = GAME_STATE_START_LEVEL;
+		} else if (gameState == GAME_STATE_WIN) { 
+			show_game_finished();
+			gameState = GAME_STATE_INIT;
 		} else if (gameState == GAME_STATE_RUNNING) {
 			do_magnet_movement();
 			do_sheep_movement();
