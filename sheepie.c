@@ -20,6 +20,11 @@
 #define SONG_TITLE 0
 #define SONG_GAME_1 1
 
+#define SFX_BOOM 0
+#define SFX_SUCCESS 1
+#define SFX_BOOP_DOWN 3
+#define SFX_BOOP_UP 2
+
 // TODO: Why on earth is this necessary?
 #pragma bssseg (push,"BSS")
 #pragma dataseg(push,"BSS")
@@ -131,6 +136,7 @@ void show_title() {
 	while (!(pad_trigger(0) & PAD_A+PAD_START)) {
 		ppu_wait_nmi();
 	}
+	sfx_play(SFX_BOOP_UP, 0);
 	animate_fadeout(5);
 	music_play(SONG_GAME_1);
 	music_pause(1);
@@ -138,6 +144,7 @@ void show_title() {
 }
 
 void show_level_finished() {
+	sfx_play(SFX_SUCCESS, 0);
 	animate_fadeout(5);
 	ppu_off();
 	pal_col(1,0x16);//set dark red color
@@ -153,6 +160,7 @@ void show_level_finished() {
 }
 
 void show_level_failed() {
+	sfx_play(SFX_BOOM, 0);
 	// Reset song
 	music_play(SONG_GAME_1);
 	music_pause(1);
