@@ -11,29 +11,48 @@ void do_banked_movement() {
 	
 	// TODO: This should be velocity based, and be very slippery if the sheep isn't velcroed down
 	// (I sound like a complete crazy person, don't I? No sheep were harmed in the making of this logic.)
-	if (touchingVelcro && (currentPadState & PAD_A)) {
-		if (sheepXVel > 2) {
-			sheepXVel -= 2;
-		} else if (sheepXVel > 0) {
-			sheepXVel = 0;
-		} else if (sheepXVel < -2) {
-			sheepXVel += 2;
+	if (touchingVelcro) {
+		if (currentPadState & PAD_A) {
+			if (sheepXVel > 2) {
+				sheepXVel -= 2;
+			} else if (sheepXVel > 0) {
+				sheepXVel = 0;
+			} else if (sheepXVel < -2) {
+				sheepXVel += 2;
+			} else {
+				sheepXVel = 0;
+			}
+
+			if (sheepYVel > 2) {
+				sheepYVel -= 2;
+			} else if (sheepYVel > 0) {
+				sheepYVel = 0;
+			} else if (sheepYVel < -2) {
+				sheepYVel += 2;
+			} else {
+				sheepYVel = 0;
+			}
 		} else {
-			sheepXVel = 0;
+			if (sheepXVel > 8) {
+				sheepXVel -= 2;
+			} else if (sheepXVel > 0) {
+				// Do nothing...
+			} else if (sheepXVel < -8) {
+				sheepXVel += 2;
+			}
+
+			if (sheepYVel > 8) {
+				sheepYVel -= 2;
+			} else if (sheepYVel > 0) {
+				// Do nothing...
+			} else if (sheepYVel < -8) {
+				sheepYVel += 2;
+			}
 		}
 
-		if (sheepYVel > 2) {
-			sheepYVel -= 2;
-		} else if (sheepYVel > 0) {
-			sheepYVel = 0;
-		} else if (sheepYVel < -2) {
-			sheepYVel += 2;
-		} else {
-			sheepYVel = 0;
-		}
+	}
 
-
-	} else {
+	if (!(touchingVelcro && currentPadState & PAD_A)) {
 		if (sheepX > magnetXhi) {
 			// TODO: Erm, defines maybe?
 			sheepXVel -= 1;
