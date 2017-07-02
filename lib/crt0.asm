@@ -12,7 +12,7 @@ FT_SFX_STREAMS			= 4			;number of sound effects played at once, 1..4
 
 
     .export _exit,__STARTUP__:absolute=1
-	.export _game_palette, _FRAME_COUNTER
+	.export _game_palette, _sprite_palette, _FRAME_COUNTER
 	.import initlib,push0,popa,popax,_main,zerobss,copydata
 
 ; Linker generated symbols
@@ -254,6 +254,8 @@ sounds_data:
 
 _game_palette:
 	.incbin "graphics/game.pal"
+_sprite_palette:
+	.incbin "graphics/sprite.pal"
 
 .segment "SAMPLES"
 

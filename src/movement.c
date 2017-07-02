@@ -11,6 +11,7 @@ void do_banked_movement() {
 	
 	// TODO: This should be velocity based, and be very slippery if the sheep isn't velcroed down
 	// (I sound like a complete crazy person, don't I? No sheep were harmed in the making of this logic.)
+	// NOTE: Velcro OVERRIDES the speed lock.
 	if (touchingVelcro) {
 		if (currentPadState & PAD_A) {
 			if (sheepXVel > 2) {
@@ -52,7 +53,7 @@ void do_banked_movement() {
 
 	}
 
-	if (!(touchingVelcro && currentPadState & PAD_A)) {
+	if (!sheepVelocityLock && !(touchingVelcro && currentPadState & PAD_A)) {
 		if (sheepX > magnetXhi) {
 			// TODO: Erm, defines maybe?
 			sheepXVel -= 1;
@@ -70,16 +71,18 @@ void do_banked_movement() {
 		}
 	}
 
-	if (sheepYVel > 0 && sheepYVel > PLAYER_MAX_VELOCITY) {
-		sheepYVel = PLAYER_MAX_VELOCITY;
-	} else if (sheepYVel < 0 && sheepYVel < 0-PLAYER_MAX_VELOCITY) {
-		sheepYVel = 0-PLAYER_MAX_VELOCITY;
-	}
+	if (!sheepVelocityLock) {
+		if (sheepYVel > 0 && sheepYVel > PLAYER_MAX_VELOCITY) {
+			sheepYVel = PLAYER_MAX_VELOCITY;
+		} else if (sheepYVel < 0 && sheepYVel < 0-PLAYER_MAX_VELOCITY) {
+			sheepYVel = 0-PLAYER_MAX_VELOCITY;
+		}
 
-	if (sheepXVel > 0 && sheepXVel > PLAYER_MAX_VELOCITY) {
-		sheepXVel = PLAYER_MAX_VELOCITY;
-	} else if (sheepXVel < 0 && sheepXVel < 0-PLAYER_MAX_VELOCITY) {
-		sheepXVel = 0-PLAYER_MAX_VELOCITY;
+		if (sheepXVel > 0 && sheepXVel > PLAYER_MAX_VELOCITY) {
+			sheepXVel = PLAYER_MAX_VELOCITY;
+		} else if (sheepXVel < 0 && sheepXVel < 0-PLAYER_MAX_VELOCITY) {
+			sheepXVel = 0-PLAYER_MAX_VELOCITY;
+		}
 	}
 
 	sheepXnext = sheepX + sheepXVel;
@@ -97,6 +100,9 @@ void do_banked_movement() {
 	if (sheepYnext > (220<<4)) {
 		sheepYnext = 220 << 4;
 	}
+
+	if (sheepVelocityLock)
+		--sheepVelocityLock;
 	
 	touchingVelcro = 0;
 	// WEIRD STUFF NOTE, using sheepXlo&sheepYlo here to test, then setting it for real a little later
@@ -150,7 +156,20 @@ void do_banked_movement() {
 			gameState = GAME_STATE_LEVEL_COMPLETE;
 		} else if (scratch == TILE_HOLE) {
 			gameState = GAME_STATE_LEVEL_FAILED;
+		} else if (scratch == TILE_BOOST_R) {
+			sheepXVel = BOOST_SPEED; // VROOM
+			sheepVelocityLock = BOOST_LOCK_TIME;
+		} else if (scratch == TILE_BOOST_L) {
+			sheepXVel = -BOOST_SPEED; // VROOM
+			sheepVelocityLock = BOOST_LOCK_TIME;
+		} else if (scratch == TILE_BOOST_D) {
+			sheepYVel = BOOST_SPEED; // VROOM
+			sheepVelocityLock = BOOST_LOCK_TIME;
+		} else if (scratch == TILE_BOOST_U) {
+			sheepYVel = -BOOST_SPEED; // VROOM
+			sheepVelocityLock = BOOST_LOCK_TIME;
 		}
+		
 	}
 
 

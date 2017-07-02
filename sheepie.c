@@ -74,12 +74,13 @@ unsigned char currentPadState, lastPadState, staticPadState, gameState;
 unsigned char i, j;
 unsigned char currentLevelId, playerOverworldPosition;
 
-unsigned char magnetX, magnetY, magnetPos, magnetPosAbs, magnetId, magnetScratch,currentSpriteId;
+unsigned char magnetX, magnetY, magnetPos, magnetPosAbs, magnetId, magnetScratch, currentSpriteId;
 unsigned char sheepXlo, sheepYlo, sheepXRlo, sheepYBlo, sheepRotation;
 int sheepX, sheepY, sheepXnext, sheepYnext, magnetXhi, magnetYhi;
 int sheepXVel, sheepYVel;
 unsigned char touchingVelcro;
 unsigned char scratch;
+unsigned char sheepVelocityLock;
 
 // Local to this file.
 static unsigned char playMusic;
@@ -101,7 +102,9 @@ void put_str(unsigned int adr, const char *str) {
 void clear_screen() {
 	// Clear the screen to start
 	vram_adr(0x2000);
-	vram_fill(0, 0x0400);
+	vram_fill(0, 0x03c0);
+	// Set the cleared palette to be red by default, to make hud simpler.
+	vram_fill(0xaa, 0x40);
 }
 
 void write_screen_buffer(unsigned char x, unsigned char y, char* data) {
@@ -110,6 +113,8 @@ void write_screen_buffer(unsigned char x, unsigned char y, char* data) {
 	screenBuffer[2] = 20u;
 	for (i = 0; data[i] != '\0'; ++i) 
 		screenBuffer[i+3u] = data[i]-0x20;
+	for (; i < 23; ++i)
+		screenBuffer[i+3u] = ' '-0x20;
 	screenBuffer[23] = NT_UPD_EOF;
 	set_vram_update(screenBuffer);
 }
@@ -168,7 +173,7 @@ void show_game_finished() {
 
 	clear_screen();
 	put_str(NTADR_A(8, 12), "You win!");
-	put_str(NTADR_A(8, 14), "The ending sucks");
+	put_str(NTADR_A(8, 14), "The ending needs help, huh?");
 	ppu_on_bg();
 	animate_fadein(5);
 	while (!(pad_trigger(0) & PAD_START)) {
@@ -205,6 +210,9 @@ void show_level_failed() {
 void show_level() {
 	magnetPos = (128-32);
 	magnetPosAbs = 1;
+	sheepXVel = 0;
+	sheepYVel = 0;
+	sheepVelocityLock = 0;
 
 	// Load up the data into currentLevel
 	set_prg_bank(PRG_FIRST_LEVEL + currentLevelId);
@@ -215,7 +223,7 @@ void show_level() {
 	ppu_off();
 	clear_screen();
 	pal_bg(game_palette);
-	pal_spr(game_palette);
+	pal_spr(sprite_palette);
 
 
 	// NOTE: Yes, this says lvl1 - it'll line up with whatever we get though.
@@ -342,7 +350,7 @@ void main(void) {
 			playMusic = 0;
 
 			currentLevelId = 0;
-			playerOverworldPosition = 0;
+			playerOverworldPosition = FIRST_LEVEL;
 
 			show_title();
 			gameState = GAME_STATE_START_LEVEL;

@@ -24,10 +24,17 @@
 #define MAP_TILE_SIZE 192
 #define TILE_END_OF_LEVEL 56
 #define TILE_HOLE 63
+#define TILE_BOOST_R 40
+#define TILE_BOOST_L 41
+#define TILE_BOOST_U 42
+#define TILE_BOOST_D 43
+#define BOOST_LOCK_TIME 40
+#define BOOST_SPEED 60
 
 #define SPRITE_TYPE_LEVEL_START 0
 
-#define NUMBER_OF_LEVELS 3
+#define NUMBER_OF_LEVELS 63
+#define FIRST_LEVEL 0
 
 
 // This file defines globals that can be used all over. You'll want common things in here, as the NES has very, very
@@ -36,6 +43,7 @@ extern unsigned char currentPadState, lastPadState, staticPadState;
 extern unsigned char i, j;
 extern unsigned char gameState;
 extern unsigned char currentLevelId, playerOverworldPosition;
+extern unsigned char sheepVelocityLock;
 
 extern unsigned char magnetX, magnetY;
 extern int sheepXVel, sheepYVel;
@@ -43,6 +51,7 @@ extern unsigned char sheepXlo, sheepYlo, sheepXRlo, sheepYBlo;
 extern int sheepX, sheepY, sheepXnext, sheepYnext, magnetXhi, magnetYhi;
 
 extern unsigned char game_palette[16];
+extern unsigned char sprite_palette[16];
 
 extern char screenBuffer[0x30];
 extern unsigned char currentLevel[256];
@@ -84,6 +93,7 @@ extern unsigned char scratch;
 #pragma zpsym ("sheepRotation")
 #pragma zpsym ("gameState")
 #pragma zpsym ("scratch")
+#pragma zpsym ("sheepVelocityLock")
 
 unsigned char test_collision(unsigned char tileId);
 

@@ -62,7 +62,7 @@ void banked_draw_level() {
 }
 
 void banked_draw_hold_a() {
-	write_screen_buffer(9, 26, "Hold A to hold on ");
+	write_screen_buffer(7, 26, "Hold A to hold on ");
 	i = 0;
 	while(i < 30) {
 		currentPadState = pad_poll(0);
@@ -75,7 +75,7 @@ void banked_draw_hold_a() {
 		draw_sprites();
 		ppu_wait_nmi();
 	}
-	write_screen_buffer(9, 26, "                  ");
+	write_screen_buffer(7, 26, "                  ");
 }
 
 void banked_draw_sprites() {
