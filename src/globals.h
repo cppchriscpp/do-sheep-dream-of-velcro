@@ -21,8 +21,11 @@
 #define SHEEP_LEFT_OFFSET 56
 #define SHEEP_TOP_OFFSET 56
 
+#define MAP_TILE_SIZE 192
 #define TILE_END_OF_LEVEL 56
 #define TILE_HOLE 63
+
+#define SPRITE_TYPE_LEVEL_START 0
 
 #define NUMBER_OF_LEVELS 3
 
@@ -87,3 +90,7 @@ unsigned char test_collision(unsigned char tileId);
 void animate_fadeout(unsigned char _delay);
 void animate_fadein(unsigned char _delay);
 void delay_or_button(unsigned char _delay);
+void write_screen_buffer(unsigned char, unsigned char, char *data);
+void do_magnet_movement();
+void do_sheep_movement();
+void draw_sprites();

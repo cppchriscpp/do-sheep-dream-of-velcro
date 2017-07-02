@@ -60,3 +60,34 @@ void banked_draw_level() {
 	vram_adr(NAMETABLE_A + 0x3c0);
 	vram_write(screenBuffer, 0x30);
 }
+
+void banked_draw_hold_a() {
+	write_screen_buffer(9, 26, "Hold A to hold on ");
+	i = 0;
+	while(i < 30) {
+		currentPadState = pad_poll(0);
+		if (currentPadState & PAD_A) {
+			i++;
+		} else {
+			i = 0;
+		}
+		do_magnet_movement();
+		draw_sprites();
+		ppu_wait_nmi();
+	}
+	write_screen_buffer(9, 26, "                  ");
+}
+
+void banked_draw_sprites() {
+	for (i = 0; i < 12; ++i) {
+		// TODO: Need to do something with every sprite, not just the start one.
+		if (currentLevel[MAP_TILE_SIZE + (i<<1)+1] == SPRITE_TYPE_LEVEL_START) {
+			// Position to be unpacked
+			scratch = currentLevel[MAP_TILE_SIZE + (i<<1)];
+			sheepY = (scratch >> 4) << 8; // Yes, I'm serious. And don't call me shirley.
+			sheepX = (scratch % 16) << 8;
+			sheepYlo = sheepY >> 4;
+			sheepXlo = sheepX >> 4;
+		}
+	}
+}

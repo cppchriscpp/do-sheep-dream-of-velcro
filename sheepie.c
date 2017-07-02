@@ -107,10 +107,10 @@ void clear_screen() {
 void write_screen_buffer(unsigned char x, unsigned char y, char* data) {
 	screenBuffer[0] = MSB(NTADR_A(x, y)) | NT_UPD_HORZ;
 	screenBuffer[1] = LSB(NTADR_A(x, y));
-	screenBuffer[2] = 16u;
+	screenBuffer[2] = 20u;
 	for (i = 0; data[i] != '\0'; ++i) 
 		screenBuffer[i+3u] = data[i]-0x20;
-	screenBuffer[19] = NT_UPD_EOF;
+	screenBuffer[23] = NT_UPD_EOF;
 	set_vram_update(screenBuffer);
 }
 
@@ -201,10 +201,12 @@ void show_level() {
 
 	set_prg_bank(PRG_LEVELMANIP);
 	banked_draw_level();
+	banked_draw_sprites();
 
 	ppu_on_all();
 	animate_fadein(5);
 	music_pause(0);
+	banked_draw_hold_a();
 
 }
 
@@ -272,6 +274,18 @@ void do_sheep_movement() {
 	do_banked_movement();
 }
 
+void draw_sprites() {
+	currentSpriteId = oam_spr(magnetX, magnetY, MAGNET_SPRITE_TILE+magnetId, 2, MAGNET_SPRITE_ID);
+	currentSpriteId = oam_spr(magnetX+8, magnetY, MAGNET_SPRITE_TILE+magnetId+1, 2, currentSpriteId);
+	currentSpriteId = oam_spr(magnetX, magnetY+8, MAGNET_SPRITE_TILE+magnetId+16, 2, currentSpriteId);
+	currentSpriteId = oam_spr(magnetX+8, magnetY+8, MAGNET_SPRITE_TILE+magnetId+17, 2, currentSpriteId);
+
+	currentSpriteId = oam_spr(sheepXlo, sheepYlo, SHEEP_SPRITE_TILE+sheepRotation, 0, SHEEP_SPRITE_ID);
+	currentSpriteId = oam_spr(sheepXlo+8, sheepYlo, SHEEP_SPRITE_TILE+sheepRotation+1, 0, currentSpriteId);
+	currentSpriteId = oam_spr(sheepXlo, sheepYlo+8, SHEEP_SPRITE_TILE+sheepRotation+16, 0, currentSpriteId);
+	currentSpriteId = oam_spr(sheepXlo+8, sheepYlo+8, SHEEP_SPRITE_TILE+sheepRotation+17, 0, currentSpriteId);
+}
+
 unsigned char test_collision(unsigned char tileId) {
 	tileId = tileId & 0x3f;
 	switch (tileId) {
@@ -330,17 +344,8 @@ void main(void) {
 			if (abs(sheepXVel) > 1 || abs(sheepYVel) > 1) {
 				sheepRotation = ((FRAME_COUNTER >> 2) & 0xfe) % 16;
 			}
-			currentSpriteId = oam_spr(magnetX, magnetY, MAGNET_SPRITE_TILE+magnetId, 2, MAGNET_SPRITE_ID);
-			currentSpriteId = oam_spr(magnetX+8, magnetY, MAGNET_SPRITE_TILE+magnetId+1, 2, currentSpriteId);
-			currentSpriteId = oam_spr(magnetX, magnetY+8, MAGNET_SPRITE_TILE+magnetId+16, 2, currentSpriteId);
-			currentSpriteId = oam_spr(magnetX+8, magnetY+8, MAGNET_SPRITE_TILE+magnetId+17, 2, currentSpriteId);
 
-			currentSpriteId = oam_spr(sheepXlo, sheepYlo, SHEEP_SPRITE_TILE+sheepRotation, 0, SHEEP_SPRITE_ID);
-			currentSpriteId = oam_spr(sheepXlo+8, sheepYlo, SHEEP_SPRITE_TILE+sheepRotation+1, 0, currentSpriteId);
-			currentSpriteId = oam_spr(sheepXlo, sheepYlo+8, SHEEP_SPRITE_TILE+sheepRotation+16, 0, currentSpriteId);
-			currentSpriteId = oam_spr(sheepXlo+8, sheepYlo+8, SHEEP_SPRITE_TILE+sheepRotation+17, 0, currentSpriteId);
-
-
+			draw_sprites();
 		}
 		ppu_wait_nmi();
 	}
