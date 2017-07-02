@@ -69,7 +69,7 @@ unsigned char i, j;
 unsigned char currentLevelId, playerOverworldPosition;
 
 unsigned char magnetX, magnetY, magnetPos, magnetPosAbs, magnetId, magnetScratch,currentSpriteId;
-unsigned char sheepXlo, sheepYlo, sheepXRlo, sheepYBlo;
+unsigned char sheepXlo, sheepYlo, sheepXRlo, sheepYBlo, sheepRotation;
 int sheepX, sheepY, sheepXnext, sheepYnext, magnetXhi, magnetYhi;
 int sheepXVel, sheepYVel;
 unsigned char touchingVelcro;
@@ -226,6 +226,8 @@ unsigned char test_collision(unsigned char tileId) {
 		case 57: 
 			touchingVelcro = 1;
 			return 0;
+		case 24:
+		case 25:
 		case 58:
 			return 1;
 		default:
@@ -258,15 +260,18 @@ void main(void) {
 		} else if (gameState == GAME_STATE_RUNNING) {
 			do_magnet_movement();
 			do_sheep_movement();
+			if (abs(sheepXVel) > 1 || abs(sheepYVel) > 1) {
+				sheepRotation = ((FRAME_COUNTER >> 2) & 0xfe) % 16;
+			}
 			currentSpriteId = oam_spr(magnetX, magnetY, MAGNET_SPRITE_TILE+magnetId, 2, MAGNET_SPRITE_ID);
 			currentSpriteId = oam_spr(magnetX+8, magnetY, MAGNET_SPRITE_TILE+magnetId+1, 2, currentSpriteId);
 			currentSpriteId = oam_spr(magnetX, magnetY+8, MAGNET_SPRITE_TILE+magnetId+16, 2, currentSpriteId);
 			currentSpriteId = oam_spr(magnetX+8, magnetY+8, MAGNET_SPRITE_TILE+magnetId+17, 2, currentSpriteId);
 
-			currentSpriteId = oam_spr(sheepXlo, sheepYlo, SHEEP_SPRITE_TILE, 0, SHEEP_SPRITE_ID);
-			currentSpriteId = oam_spr(sheepXlo+8, sheepYlo, SHEEP_SPRITE_TILE+1, 0, currentSpriteId);
-			currentSpriteId = oam_spr(sheepXlo, sheepYlo+8, SHEEP_SPRITE_TILE+16, 0, currentSpriteId);
-			currentSpriteId = oam_spr(sheepXlo+8, sheepYlo+8, SHEEP_SPRITE_TILE+17, 0, currentSpriteId);
+			currentSpriteId = oam_spr(sheepXlo, sheepYlo, SHEEP_SPRITE_TILE+sheepRotation, 0, SHEEP_SPRITE_ID);
+			currentSpriteId = oam_spr(sheepXlo+8, sheepYlo, SHEEP_SPRITE_TILE+sheepRotation+1, 0, currentSpriteId);
+			currentSpriteId = oam_spr(sheepXlo, sheepYlo+8, SHEEP_SPRITE_TILE+sheepRotation+16, 0, currentSpriteId);
+			currentSpriteId = oam_spr(sheepXlo+8, sheepYlo+8, SHEEP_SPRITE_TILE+sheepRotation+17, 0, currentSpriteId);
 
 
 		}

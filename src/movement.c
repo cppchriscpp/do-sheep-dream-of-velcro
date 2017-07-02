@@ -81,10 +81,10 @@ void do_banked_movement() {
 	
 	touchingVelcro = 0;
 	// WEIRD STUFF NOTE, using sheepXlo&sheepYlo here to test, then setting it for real a little later
-	sheepXlo = sheepX >> 8;
-	sheepYlo = sheepYnext >> 8;
-	sheepXRlo = (sheepX+SHEEP_WIDTH) >> 8;
-	sheepYBlo = (sheepYnext+SHEEP_HEIGHT) >> 8;
+	sheepXlo = (sheepX+SHEEP_LEFT_OFFSET) >> 8;
+	sheepYlo = (sheepYnext+SHEEP_TOP_OFFSET) >> 8;
+	sheepXRlo = (sheepX+SHEEP_LEFT_OFFSET+SHEEP_WIDTH) >> 8;
+	sheepYBlo = (sheepYnext+SHEEP_TOP_OFFSET+SHEEP_HEIGHT) >> 8;
 	if (sheepYVel < 0) {
 		// Going Y-, or up. So... test TL and TR
 		if (test_collision(currentLevel[sheepXlo+(sheepYlo<<4)]) || test_collision(currentLevel[sheepXRlo+(sheepYlo<<4)])) {
@@ -98,10 +98,10 @@ void do_banked_movement() {
 		}
 	}
 
-	sheepXlo = sheepXnext >> 8;
-	sheepYlo = sheepY >> 8;
-	sheepXRlo = (sheepXnext + SHEEP_WIDTH) >> 8;
-	sheepYBlo = (sheepY + SHEEP_HEIGHT) >> 8;
+	sheepXlo = (sheepXnext+SHEEP_LEFT_OFFSET) >> 8;
+	sheepYlo = (sheepY+SHEEP_TOP_OFFSET) >> 8;
+	sheepXRlo = (sheepXnext+SHEEP_LEFT_OFFSET + SHEEP_WIDTH) >> 8;
+	sheepYBlo = (sheepY + SHEEP_TOP_OFFSET + SHEEP_HEIGHT) >> 8;
 	if (sheepXVel < 0) {
 		// Going X-, or left, so... test TL and BL
 		if (test_collision(currentLevel[sheepXlo+(sheepYlo<<4)]) || test_collision(currentLevel[sheepXlo+(sheepYBlo<<4)])) {

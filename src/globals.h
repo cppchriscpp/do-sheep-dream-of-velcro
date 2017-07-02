@@ -15,8 +15,10 @@
 #define SHEEP_SPRITE_TILE 0xc0
 
 #define PLAYER_MAX_VELOCITY 32
-#define SHEEP_WIDTH 256
-#define SHEEP_HEIGHT 256
+#define SHEEP_WIDTH 176
+#define SHEEP_HEIGHT 176
+#define SHEEP_LEFT_OFFSET 56
+#define SHEEP_TOP_OFFSET 56
 
 
 // This file defines globals that can be used all over. You'll want common things in here, as the NES has very, very
@@ -36,7 +38,8 @@ extern unsigned char game_palette[16];
 extern char screenBuffer[0x30];
 extern unsigned char currentLevel[256];
 extern const char lvl_details[4];
-extern unsigned char touchingVelcro;
+extern unsigned char touchingVelcro, sheepRotation;
+extern unsigned char FRAME_COUNTER;
 
 // Crappy macro to get absolute value in an absolutely disgusting way
 // ps: Stolen from missing lands (again)
@@ -65,6 +68,8 @@ extern unsigned char touchingVelcro;
 #pragma zpsym ("sheepYBlo")
 #pragma zpsym ("sheepXVel")
 #pragma zpsym ("sheepYVel")
-// #pragma zpsym ("FRAME_COUNTER")
+#pragma zpsym ("touchingVelcro")
+#pragma zpsym ("FRAME_COUNTER")
+#pragma zpsym ("sheepRotation")
 
 unsigned char test_collision(unsigned char tileId);
