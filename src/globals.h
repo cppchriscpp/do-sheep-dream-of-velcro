@@ -58,6 +58,7 @@ extern unsigned char currentLevel[256];
 extern const char lvl_details[4];
 extern unsigned char touchingVelcro, sheepRotation;
 extern unsigned char FRAME_COUNTER;
+extern unsigned char prettyLevel, prettyLives;
 
 extern unsigned char scratch;
 
@@ -94,6 +95,8 @@ extern unsigned char scratch;
 #pragma zpsym ("gameState")
 #pragma zpsym ("scratch")
 #pragma zpsym ("sheepVelocityLock")
+#pragma zpsym ("prettyLevel")
+#pragma zpsym ("prettyLives")
 
 unsigned char test_collision(unsigned char tileId);
 
@@ -104,3 +107,4 @@ void write_screen_buffer(unsigned char, unsigned char, char *data);
 void do_magnet_movement();
 void do_sheep_movement();
 void draw_sprites();
+void put_str(unsigned int adr, const char *str);

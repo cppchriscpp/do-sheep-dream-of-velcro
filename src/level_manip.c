@@ -59,6 +59,15 @@ void banked_draw_level() {
 	}
 	vram_adr(NAMETABLE_A + 0x3c0);
 	vram_write(screenBuffer, 0x30);
+
+	// Okay, this is technically not the screen, but fight me.
+	put_str(NTADR_A(6, 25), "Level: ");
+	vram_put(('0' + (prettyLevel >> 4)) - 0x20);
+	vram_put(('0' + (prettyLevel % 16)) - 0x20);
+
+	put_str(NTADR_A(16, 25), "Deaths: ");
+	vram_put(('0' + (prettyLives >> 4)) - 0x20);
+	vram_put(('0' + (prettyLives % 16)) - 0x20);
 }
 
 void banked_draw_hold_a() {

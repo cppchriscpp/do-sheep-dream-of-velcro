@@ -81,6 +81,7 @@ int sheepXVel, sheepYVel;
 unsigned char touchingVelcro;
 unsigned char scratch;
 unsigned char sheepVelocityLock;
+unsigned char prettyLevel, prettyLives;
 
 // Local to this file.
 static unsigned char playMusic;
@@ -351,6 +352,8 @@ void main(void) {
 
 			currentLevelId = 0;
 			playerOverworldPosition = FIRST_LEVEL;
+			prettyLevel = FIRST_LEVEL+1; // Start on level 1, not 0.
+			prettyLives = 0;
 
 			show_title();
 			gameState = GAME_STATE_START_LEVEL;
@@ -360,6 +363,10 @@ void main(void) {
 		} else if (gameState == GAME_STATE_LEVEL_COMPLETE) {
 			show_level_finished();
 			playerOverworldPosition++;
+			prettyLevel++;
+			if ((prettyLevel & 0x0f) == 10) {
+				prettyLevel += 6;
+			}
 			if (playerOverworldPosition == NUMBER_OF_LEVELS) {
 				gameState = GAME_STATE_WIN;
 			} else {
@@ -367,6 +374,10 @@ void main(void) {
 			}
 		} else if (gameState == GAME_STATE_LEVEL_FAILED) {
 			show_level_failed();
+			++prettyLives;
+			if ((prettyLives & 0x0f) == 10) {
+				prettyLives += 6;
+			}
 			gameState = GAME_STATE_START_LEVEL;
 		} else if (gameState == GAME_STATE_WIN) { 
 			show_game_finished();
