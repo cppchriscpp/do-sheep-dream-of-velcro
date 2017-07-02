@@ -1,6 +1,7 @@
 #define GAME_STATE_RUNNING 0
 #define GAME_STATE_REDRAW 10
 #define GAME_STATE_LEVEL_COMPLETE 220
+#define GAME_STATE_LEVEL_FAILED 120
 #define GAME_STATE_START_LEVEL 30
 #define GAME_STATE_PAUSE 100
 #define GAME_STATE_INIT 255
@@ -19,6 +20,9 @@
 #define SHEEP_HEIGHT 176
 #define SHEEP_LEFT_OFFSET 56
 #define SHEEP_TOP_OFFSET 56
+
+#define TILE_END_OF_LEVEL 56
+#define TILE_HOLE 63
 
 
 // This file defines globals that can be used all over. You'll want common things in here, as the NES has very, very
@@ -40,6 +44,8 @@ extern unsigned char currentLevel[256];
 extern const char lvl_details[4];
 extern unsigned char touchingVelcro, sheepRotation;
 extern unsigned char FRAME_COUNTER;
+
+extern unsigned char scratch;
 
 // Crappy macro to get absolute value in an absolutely disgusting way
 // ps: Stolen from missing lands (again)
@@ -71,5 +77,10 @@ extern unsigned char FRAME_COUNTER;
 #pragma zpsym ("touchingVelcro")
 #pragma zpsym ("FRAME_COUNTER")
 #pragma zpsym ("sheepRotation")
+#pragma zpsym ("gameState")
+#pragma zpsym ("scratch")
 
 unsigned char test_collision(unsigned char tileId);
+
+void animate_fadeout(unsigned char _delay);
+void animate_fadein(unsigned char _delay);

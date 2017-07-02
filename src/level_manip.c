@@ -3,7 +3,6 @@
 #pragma rodataseg ("ROM_01")
 #pragma codeseg ("ROM_01")
 
-static unsigned char scratch;
 static unsigned int scratchInt;
 
 void banked_draw_level() {

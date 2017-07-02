@@ -73,6 +73,7 @@ unsigned char sheepXlo, sheepYlo, sheepXRlo, sheepYBlo, sheepRotation;
 int sheepX, sheepY, sheepXnext, sheepYnext, magnetXhi, magnetYhi;
 int sheepXVel, sheepYVel;
 unsigned char touchingVelcro;
+unsigned char scratch;
 
 // Local to this file.
 static unsigned char playMusic;
@@ -128,16 +129,44 @@ void show_title() {
 	while (!(pad_trigger(0) & PAD_A+PAD_START)) {
 		ppu_wait_nmi();
 	}
+	animate_fadeout(5);
 	music_pause(1);
 
 }
 
+void show_level_finished() {
+	animate_fadeout(5);
+	ppu_off();
+	clear_screen();
+	put_str(NTADR_A(8, 12), "Level complete!");
+	ppu_on_bg();
+	animate_fadein(5);
+	delay(60);
+	animate_fadeout(5);
+	ppu_on_all();
+}
+
+void show_level_failed() {
+	animate_fadeout(5);
+	ppu_off();
+	clear_screen();
+	put_str(NTADR_A(8, 12), "Your sheep");
+	put_str(NTADR_A(8, 14), "is sheared!");
+	ppu_on_bg();
+	animate_fadein(5);
+	delay(60);
+	animate_fadeout(5);
+	ppu_on_all();
+}
+
+
 void show_level() {
-	magnetPos = 0;
+	magnetPos = (128-32);
+	magnetPosAbs = 1;
 
 	// Load up the data into currentLevel
 	set_prg_bank(PRG_FIRST_LEVEL + currentLevelId);
-	playerOverworldPosition = *(char*)(lvl_details);
+	// TODO: Take this from a pseudosprite?
 	sheepX = (*(char*)(lvl_details+1)) << 4;
 	sheepY = *(char*)(lvl_details+2) << 4;
 
@@ -154,6 +183,8 @@ void show_level() {
 	banked_draw_level();
 
 	ppu_on_all();
+	animate_fadein(5);
+
 }
 
 void do_magnet_movement() {
@@ -244,6 +275,7 @@ void main(void) {
 	set_chr_bank_1(CHR_BANK_1);
 	gameState = GAME_STATE_INIT;
 	currentLevelId = 0;
+	playerOverworldPosition = 0;
 
 
 	// Now we wait for input from the user, and do dumb things!
@@ -257,6 +289,13 @@ void main(void) {
 		} else if (gameState == GAME_STATE_START_LEVEL) {
 			show_level();
 			gameState = GAME_STATE_RUNNING;
+		} else if (gameState == GAME_STATE_LEVEL_COMPLETE) {
+			show_level_finished();
+			playerOverworldPosition++;
+			gameState = GAME_STATE_START_LEVEL;
+		} else if (gameState == GAME_STATE_LEVEL_FAILED) {
+			show_level_failed();
+			gameState = GAME_STATE_START_LEVEL;
 		} else if (gameState == GAME_STATE_RUNNING) {
 			do_magnet_movement();
 			do_sheep_movement();
@@ -277,4 +316,25 @@ void main(void) {
 		}
 		ppu_wait_nmi();
 	}
+}
+
+void animate_fadeout(unsigned char _delay) {
+	pal_bright(3);
+	delay(_delay);
+	pal_bright(2);
+	delay(_delay);;
+	pal_bright(1);
+	delay(_delay);;
+	pal_bright(0);
+}
+
+void animate_fadein(unsigned char _delay) {
+	pal_bright(1);
+	delay(_delay);;
+	pal_bright(2);
+	delay(_delay);;
+	pal_bright(3);
+	delay(_delay);;
+	pal_bright(4);
+
 }

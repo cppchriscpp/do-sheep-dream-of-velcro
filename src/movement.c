@@ -118,6 +118,23 @@ void do_banked_movement() {
 	sheepX += sheepXVel;
 	sheepY += sheepYVel;
 
+	// Test, are you within one block entirely?
+	sheepXlo = (sheepX+SHEEP_LEFT_OFFSET) >> 8;
+	sheepYlo = (sheepY+SHEEP_TOP_OFFSET) >> 8;
+	sheepXRlo = (sheepX+SHEEP_LEFT_OFFSET + SHEEP_WIDTH) >> 8;
+	sheepYBlo = (sheepY + SHEEP_TOP_OFFSET + SHEEP_HEIGHT) >> 8;
+	scratch = currentLevel[sheepXlo+(sheepYlo<<4)];
+
+	if (scratch == currentLevel[sheepXRlo+(sheepYlo<<4)] && scratch == currentLevel[sheepXlo+(sheepYBlo<<4)] && scratch == currentLevel[sheepXRlo+(sheepYBlo<<4)]) {
+		scratch &= 0x3f;
+		if (scratch == TILE_END_OF_LEVEL) {
+			gameState = GAME_STATE_LEVEL_COMPLETE;
+		} else if (scratch == TILE_HOLE) {
+			gameState = GAME_STATE_LEVEL_FAILED;
+		}
+	}
+
+
 
 	sheepXlo = sheepX >> 4;
 	sheepYlo = sheepY >> 4;
