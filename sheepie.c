@@ -110,21 +110,22 @@ void write_screen_buffer(unsigned char x, unsigned char y, char* data) {
 
 void show_title() {
 	// TODO: Load palette file
-	pal_col(1,0x19);//set dark green color
-	pal_col(17,0x19);
+	pal_col(1,0x16);//set dark red color
+	pal_col(17,0x16);
 	music_play(SONG_TITLE);
 	music_pause(0);
 
 
 	// Show a message to the user.
-	put_str(NTADR_A(2,8), "MagnaSheep");
-	put_str(NTADR_A(2,20), "Press Start");
+	put_str(NTADR_A(9,8), "Dizzy  Sheep");
+	put_str(NTADR_A(9,10), "  Disaster");
+	put_str(NTADR_A(7,20), "- Press Start -");
 
 	// Also show some cool build info because we can.
 	put_str(NTADR_A(2,24), "Built: " BUILD_DATE);
 	put_str(NTADR_A(2,25), "Build #" BUILD_NUMBER_STR " (" GIT_COMMIT_ID_SHORT " - " GIT_BRANCH ")");
 	put_str(NTADR_A(2,26), "Commit counter: " COMMIT_COUNT_STR);
-	ppu_on_all();
+	ppu_on_bg();
 
 	while (!(pad_trigger(0) & PAD_A+PAD_START)) {
 		ppu_wait_nmi();
@@ -137,11 +138,14 @@ void show_title() {
 void show_level_finished() {
 	animate_fadeout(5);
 	ppu_off();
+	pal_col(1,0x16);//set dark red color
+	pal_col(17,0x16);
+
 	clear_screen();
 	put_str(NTADR_A(8, 12), "Level complete!");
 	ppu_on_bg();
 	animate_fadein(5);
-	delay(60);
+	delay_or_button(60);
 	animate_fadeout(5);
 	ppu_on_all();
 }
@@ -149,12 +153,15 @@ void show_level_finished() {
 void show_level_failed() {
 	animate_fadeout(5);
 	ppu_off();
+	pal_col(1,0x16);//set dark red color
+	pal_col(17,0x16);
+
 	clear_screen();
 	put_str(NTADR_A(8, 12), "Your sheep");
 	put_str(NTADR_A(8, 14), "is sheared!");
 	ppu_on_bg();
 	animate_fadein(5);
-	delay(60);
+	delay_or_button(60);
 	animate_fadeout(5);
 	ppu_on_all();
 }
@@ -269,13 +276,11 @@ unsigned char test_collision(unsigned char tileId) {
 // Main entry point for the application.
 void main(void) {
 
-	playMusic = 0;
 	set_mirroring(MIRROR_VERTICAL);
 	set_chr_bank_0(CHR_BANK_0);
 	set_chr_bank_1(CHR_BANK_1);
+
 	gameState = GAME_STATE_INIT;
-	currentLevelId = 0;
-	playerOverworldPosition = 0;
 
 
 	// Now we wait for input from the user, and do dumb things!
@@ -284,6 +289,11 @@ void main(void) {
 		staticPadState = pad_trigger(0);
 		currentPadState = pad_state(0);
 		if (gameState == GAME_STATE_INIT) {
+			playMusic = 0;
+
+			currentLevelId = 0;
+			playerOverworldPosition = 0;
+
 			show_title();
 			gameState = GAME_STATE_START_LEVEL;
 		} else if (gameState == GAME_STATE_START_LEVEL) {
@@ -292,7 +302,11 @@ void main(void) {
 		} else if (gameState == GAME_STATE_LEVEL_COMPLETE) {
 			show_level_finished();
 			playerOverworldPosition++;
-			gameState = GAME_STATE_START_LEVEL;
+			if (playerOverworldPosition == NUMBER_OF_LEVELS) {
+				gameState = GAME_STATE_WIN;
+			} else {
+				gameState = GAME_STATE_START_LEVEL;
+			}
 		} else if (gameState == GAME_STATE_LEVEL_FAILED) {
 			show_level_failed();
 			gameState = GAME_STATE_START_LEVEL;
@@ -337,4 +351,14 @@ void animate_fadein(unsigned char _delay) {
 	delay(_delay);;
 	pal_bright(4);
 
+}
+
+void delay_or_button(unsigned char _delay) {
+	for (i = 0; i < _delay; ++i) {
+		if (pad_trigger(1) & (PAD_A | PAD_START)) {
+			break;
+		}
+		++i;
+		ppu_wait_nmi();
+	}
 }

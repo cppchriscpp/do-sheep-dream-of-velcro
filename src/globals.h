@@ -24,6 +24,8 @@
 #define TILE_END_OF_LEVEL 56
 #define TILE_HOLE 63
 
+#define NUMBER_OF_LEVELS 3
+
 
 // This file defines globals that can be used all over. You'll want common things in here, as the NES has very, very
 // limited ram. 
@@ -84,3 +86,4 @@ unsigned char test_collision(unsigned char tileId);
 
 void animate_fadeout(unsigned char _delay);
 void animate_fadein(unsigned char _delay);
+void delay_or_button(unsigned char _delay);
