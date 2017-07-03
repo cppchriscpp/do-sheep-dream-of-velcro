@@ -34,7 +34,7 @@
 #define SPRITE_TYPE_LEVEL_START 0
 
 #define NUMBER_OF_LEVELS 63
-#define FIRST_LEVEL 0
+#define FIRST_LEVEL 6
 
 
 // This file defines globals that can be used all over. You'll want common things in here, as the NES has very, very
@@ -108,3 +108,4 @@ void do_magnet_movement();
 void do_sheep_movement();
 void draw_sprites();
 void put_str(unsigned int adr, const char *str);
+void do_pause();

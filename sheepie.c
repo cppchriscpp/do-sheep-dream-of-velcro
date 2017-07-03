@@ -337,7 +337,7 @@ void main(void) {
 
 	set_mirroring(MIRROR_VERTICAL);
 	set_chr_bank_0(CHR_BANK_0);
-	set_chr_bank_1(CHR_BANK_1);
+	set_chr_bank_1(CHR_BANK_0);
 
 	gameState = GAME_STATE_INIT;
 
@@ -385,6 +385,12 @@ void main(void) {
 		} else if (gameState == GAME_STATE_RUNNING) {
 			do_magnet_movement();
 			do_sheep_movement();
+
+			// Cheapest animation method ever.
+			set_chr_bank_0(CHR_BANK_0 + ((FRAME_COUNTER>>5) & 0x01));
+			set_chr_bank_1(CHR_BANK_0 + ((FRAME_COUNTER>>5) & 0x01));
+
+
 			if (abs(sheepXVel) > 1 || abs(sheepYVel) > 1) {
 				sheepRotation = ((FRAME_COUNTER >> 2) & 0xfe) % 16;
 			}
@@ -393,6 +399,18 @@ void main(void) {
 		}
 		ppu_wait_nmi();
 	}
+}
+
+// NOTE: Half written... not trivial to write sadly; gonna leave it out unless we really need it.
+void do_pause() {
+	sfx_play(SFX_BOOP_UP, 0);
+	animate_fadeout(5);
+
+
+	while (!(pad_trigger(0) & PAD_START)) {
+		ppu_wait_nmi();
+	}
+	animate_fadein(5);
 }
 
 void animate_fadeout(unsigned char _delay) {
