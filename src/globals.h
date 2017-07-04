@@ -31,7 +31,7 @@
 #define BOOST_LOCK_TIME 40
 #define BOOST_SPEED 60
 
-#define NUMBER_OF_LEVELS 63
+#define NUMBER_OF_LEVELS 10
 #define FIRST_LEVEL 0
 
 

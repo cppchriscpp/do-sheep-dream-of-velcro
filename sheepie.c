@@ -6,6 +6,7 @@
 #include "src/movement.h"
 #include "src/sprites.h"
 #include "graphics/title_rle.h"
+#include "graphics/credits_rle.h"
 #include "levels/processed/lvl1_tiles.h"
 
 // Suggestion: Define smart names for your banks and use defines like this. 
@@ -190,6 +191,7 @@ void show_level_finished() {
 	pal_col(17,0x16);
 
 	clear_screen();
+	oam_hide_rest(0);
 	put_str(NTADR_A(8, 12), "Level complete!");
 	ppu_on_bg();
 	animate_fadein(5);
@@ -202,15 +204,65 @@ void show_game_finished() {
 	music_pause(1);
 	animate_fadeout(5);
 	ppu_off();
-	pal_col(1,0x16);//set dark red color
-	pal_col(17,0x16);
 
-	clear_screen();
-	put_str(NTADR_A(8, 12), "You win!");
-	put_str(NTADR_A(8, 14), "The ending needs help, huh?");
-	ppu_on_bg();
+	// Show a message to the user.
+	pal_bg(game_palette);
+	pal_spr(sprite_palette);
+	vram_adr(NAMETABLE_A);
+	vram_unrle(credits_rle);
+	oam_hide_rest(0);
+
+	// Also show some cool build info because we can.
+	// Bah, for some stupid reason part of the text on the bottom is being cut... let's just show the
+	// build date.
+	put_str(NTADR_A(2,27), "Built: " BUILD_DATE);
+	// put_str(NTADR_A(2,27), "Build #" BUILD_NUMBER_STR " (" GIT_COMMIT_ID_SHORT " - " GIT_BRANCH ")");
+	// put_str(NTADR_A(2,27), "Commit counter: " COMMIT_COUNT_STR);
+
+	vram_adr(NTADR_A(18, 16));
+	vram_put(('0' + (prettyLives >> 4)) - 0x20);
+	vram_put(('0' + (prettyLives % 16)) - 0x20);
+
+	ppu_on_all();
+
+	magnetX = 4<<3;
+	magnetY = 2<<3;
+	sheepXlo = 26<<3;
+	sheepYlo = 2<<3;
+
 	animate_fadein(5);
 	while (!(pad_trigger(0) & PAD_START)) {
+
+		magnetId = ((FRAME_COUNTER >> 2) & 0xfe) % 16;
+		sheepRotation = (16 - magnetId) % 16;
+		magnetX = 4<<3;
+		magnetY = 2<<3;
+		sheepXlo = 26<<3;
+		sheepYlo = 2<<3;
+		currentSpriteId = oam_spr(magnetX, magnetY, SHEEP_SPRITE_TILE+magnetId, 0, MAGNET_SPRITE_ID);
+		currentSpriteId = oam_spr(magnetX+8, magnetY, SHEEP_SPRITE_TILE+magnetId+1, 0, currentSpriteId);
+		currentSpriteId = oam_spr(magnetX, magnetY+8, SHEEP_SPRITE_TILE+magnetId+16, 0, currentSpriteId);
+		currentSpriteId = oam_spr(magnetX+8, magnetY+8, SHEEP_SPRITE_TILE+magnetId+17, 0, currentSpriteId);
+		currentSpriteId = oam_spr(sheepXlo, sheepYlo, SHEEP_SPRITE_TILE+sheepRotation, 0, SHEEP_SPRITE_ID);
+		currentSpriteId = oam_spr(sheepXlo+8, sheepYlo, SHEEP_SPRITE_TILE+sheepRotation+1, 0, currentSpriteId);
+		currentSpriteId = oam_spr(sheepXlo, sheepYlo+8, SHEEP_SPRITE_TILE+sheepRotation+16, 0, currentSpriteId);
+		currentSpriteId = oam_spr(sheepXlo+8, sheepYlo+8, SHEEP_SPRITE_TILE+sheepRotation+17, 0, currentSpriteId);
+
+		magnetX = 2<<3;
+		magnetY = 10<<3;
+		sheepXlo = 28<<3;
+		sheepYlo = 10<<3;
+		currentSpriteId = oam_spr(magnetX, magnetY, SHEEP_SPRITE_TILE+magnetId, 0, currentSpriteId);
+		currentSpriteId = oam_spr(magnetX+8, magnetY, SHEEP_SPRITE_TILE+magnetId+1, 0, currentSpriteId);
+		currentSpriteId = oam_spr(magnetX, magnetY+8, SHEEP_SPRITE_TILE+magnetId+16, 0, currentSpriteId);
+		currentSpriteId = oam_spr(magnetX+8, magnetY+8, SHEEP_SPRITE_TILE+magnetId+17, 0, currentSpriteId);
+		currentSpriteId = oam_spr(sheepXlo, sheepYlo, SHEEP_SPRITE_TILE+sheepRotation, 0, currentSpriteId);
+		currentSpriteId = oam_spr(sheepXlo+8, sheepYlo, SHEEP_SPRITE_TILE+sheepRotation+1, 0, currentSpriteId);
+		currentSpriteId = oam_spr(sheepXlo, sheepYlo+8, SHEEP_SPRITE_TILE+sheepRotation+16, 0, currentSpriteId);
+		currentSpriteId = oam_spr(sheepXlo+8, sheepYlo+8, SHEEP_SPRITE_TILE+sheepRotation+17, 0, currentSpriteId);
+
+
+
 		ppu_wait_nmi();
 	}
 	animate_fadeout(5);
@@ -231,6 +283,7 @@ void show_level_failed() {
 	pal_col(17,0x16);
 
 	clear_screen();
+	oam_hide_rest(0);
 	put_str(NTADR_A(8, 12), "Your sheep");
 	put_str(NTADR_A(8, 14), "is sheared!");
 	ppu_on_bg();
