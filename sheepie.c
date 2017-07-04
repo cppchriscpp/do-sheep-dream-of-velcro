@@ -4,6 +4,7 @@
 #include "src/globals.h"
 #include "src/level_manip.h"
 #include "src/movement.h"
+#include "src/sprites.h"
 #include "levels/processed/lvl1_tiles.h"
 
 // Suggestion: Define smart names for your banks and use defines like this. 
@@ -16,6 +17,7 @@
 #define PRG_LEVELMANIP 1
 #define PRG_MOVEMENT 1
 #define PRG_FIRST_LEVEL 2
+#define PRG_SPRITES 1
 
 #define SONG_TITLE 0
 #define SONG_GAME_1 1
@@ -29,6 +31,8 @@
 #pragma bssseg (push,"BSS")
 #pragma dataseg(push,"BSS")
 unsigned char currentLevel[256];
+
+char extendedSpriteData[56];
 
 
 // FIXME: Put me in a freakin bank, ya fool
@@ -79,9 +83,11 @@ unsigned char sheepXlo, sheepYlo, sheepXRlo, sheepYBlo, sheepRotation;
 int sheepX, sheepY, sheepXnext, sheepYnext, magnetXhi, magnetYhi;
 int sheepXVel, sheepYVel;
 unsigned char touchingVelcro;
-unsigned char scratch;
+unsigned char scratch, scratch2;
+unsigned char tempX, tempY, tempPosition, tempSpriteId;
 unsigned char sheepVelocityLock;
 unsigned char prettyLevel, prettyLives;
+unsigned int scratchInt;
 
 // Local to this file.
 static unsigned char playMusic;
@@ -317,11 +323,12 @@ void draw_sprites() {
 	currentSpriteId = oam_spr(sheepXlo+8, sheepYlo+8, SHEEP_SPRITE_TILE+sheepRotation+17, 0, currentSpriteId);
 }
 
-unsigned char test_collision(unsigned char tileId) {
+unsigned char test_collision(unsigned char tileId, unsigned char isPlayer) {
 	tileId = tileId & 0x3f;
 	switch (tileId) {
 		case 57: 
-			touchingVelcro = 1;
+			if (isPlayer)
+				touchingVelcro = 1;
 			return 0;
 		case 24:
 		case 25:
@@ -385,6 +392,8 @@ void main(void) {
 		} else if (gameState == GAME_STATE_RUNNING) {
 			do_magnet_movement();
 			do_sheep_movement();
+			do_sprite_collision();
+			update_sprites();
 
 			// Cheapest animation method ever.
 			set_chr_bank_0(CHR_BANK_0 + ((FRAME_COUNTER>>5) & 0x01));
@@ -399,6 +408,11 @@ void main(void) {
 		}
 		ppu_wait_nmi();
 	}
+}
+
+void update_sprites() {
+	set_prg_bank(PRG_SPRITES);
+	banked_update_sprites();
 }
 
 // NOTE: Half written... not trivial to write sadly; gonna leave it out unless we really need it.
@@ -441,5 +455,28 @@ void delay_or_button(unsigned char _delay) {
 		}
 		++i;
 		ppu_wait_nmi();
+	}
+}
+
+void do_sprite_collision() {
+	// tempX = sheepX >> 4;
+	// tempY = playerY >> 4;
+	// sheepXlo sheepYlo
+	for (i = 0; i < 12; ++i) {
+		if (extendedSpriteData[i<<2] == SPRITE_TYPE_LEVEL_START)
+			continue;
+		tempX = *(char*)(0x200 + FIRST_ENEMY_SPRITE_ID+3 + (i<<4));
+		tempY = *(char*)(0x200 + FIRST_ENEMY_SPRITE_ID + (i<<4));
+
+		// All sprites are enemies of some sort, so shrink all enemies a little bit... move it 3 over, and treat it as
+		// 10 wide vs 16.
+		tempX += SPRITE_OFFSET;
+		tempY += SPRITE_OFFSET;
+
+		if ((sheepX+SHEEP_LEFT_OFFSET) >> 4 < tempX + SPRITE_WIDTH_MINI && ((sheepX+SHEEP_LEFT_OFFSET+SHEEP_WIDTH) >> 4) > tempX && 
+			(sheepY+SHEEP_TOP_OFFSET) >> 4 < tempY + SPRITE_WIDTH_MINI && ((sheepY+SHEEP_TOP_OFFSET+SHEEP_HEIGHT) >> 4) > tempY) {
+			// WOMP WOMP
+			gameState = GAME_STATE_LEVEL_FAILED;	
+		}
 	}
 }

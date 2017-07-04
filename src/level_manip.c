@@ -1,9 +1,8 @@
 #include "src/globals.h"
 #include "lib/neslib.h"
+#include "src/sprites.h"
 #pragma rodataseg ("ROM_01")
 #pragma codeseg ("ROM_01")
-
-static unsigned int scratchInt;
 
 void banked_draw_level() {
 	vram_inc(0);
@@ -85,18 +84,4 @@ void banked_draw_hold_a() {
 		ppu_wait_nmi();
 	}
 	write_screen_buffer(7, 26, "                  ");
-}
-
-void banked_draw_sprites() {
-	for (i = 0; i < 12; ++i) {
-		// TODO: Need to do something with every sprite, not just the start one.
-		if (currentLevel[MAP_TILE_SIZE + (i<<1)+1] == SPRITE_TYPE_LEVEL_START) {
-			// Position to be unpacked
-			scratch = currentLevel[MAP_TILE_SIZE + (i<<1)];
-			sheepY = (scratch >> 4) << 8; // Yes, I'm serious. And don't call me shirley.
-			sheepX = (scratch % 16) << 8;
-			sheepYlo = sheepY >> 4;
-			sheepXlo = sheepX >> 4;
-		}
-	}
 }

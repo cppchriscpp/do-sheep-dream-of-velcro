@@ -112,13 +112,13 @@ void do_banked_movement() {
 	sheepYBlo = (sheepYnext+SHEEP_TOP_OFFSET+SHEEP_HEIGHT) >> 8;
 	if (sheepYVel < 0) {
 		// Going Y-, or up. So... test TL and TR
-		if (test_collision(currentLevel[sheepXlo+(sheepYlo<<4)]) || test_collision(currentLevel[sheepXRlo+(sheepYlo<<4)])) {
+		if (test_collision(currentLevel[sheepXlo+(sheepYlo<<4)], 1) || test_collision(currentLevel[sheepXRlo+(sheepYlo<<4)], 1)) {
 			sheepYVel = 0;
 		}
 		// TODO?: Could set direction here
 	} else if (sheepYVel > 0) {
 		// Oh, BL/BR
-		if (test_collision(currentLevel[sheepXlo+(sheepYBlo<<4)]) || test_collision(currentLevel[sheepXRlo+(sheepYBlo<<4)])) {
+		if (test_collision(currentLevel[sheepXlo+(sheepYBlo<<4)], 1) || test_collision(currentLevel[sheepXRlo+(sheepYBlo<<4)], 1)) {
 			sheepYVel = 0;
 		}
 	}
@@ -129,12 +129,12 @@ void do_banked_movement() {
 	sheepYBlo = (sheepY + SHEEP_TOP_OFFSET + SHEEP_HEIGHT) >> 8;
 	if (sheepXVel < 0) {
 		// Going X-, or left, so... test TL and BL
-		if (test_collision(currentLevel[sheepXlo+(sheepYlo<<4)]) || test_collision(currentLevel[sheepXlo+(sheepYBlo<<4)])) {
+		if (test_collision(currentLevel[sheepXlo+(sheepYlo<<4)], 1) || test_collision(currentLevel[sheepXlo+(sheepYBlo<<4)], 1)) {
 			sheepXVel = 0;
 		}
 	} else if (sheepXVel > 0) {
 		// Going X+, or right, so... test TR and BR
-		if (test_collision(currentLevel[sheepXRlo+(sheepYlo<<4)]) || test_collision(currentLevel[sheepXRlo+(sheepYBlo<<4)])) {
+		if (test_collision(currentLevel[sheepXRlo+(sheepYlo<<4)], 1) || test_collision(currentLevel[sheepXRlo+(sheepYBlo<<4)], 1)) {
 			sheepXVel = 0;
 		}
 	}

@@ -31,10 +31,8 @@
 #define BOOST_LOCK_TIME 40
 #define BOOST_SPEED 60
 
-#define SPRITE_TYPE_LEVEL_START 0
-
 #define NUMBER_OF_LEVELS 63
-#define FIRST_LEVEL 6
+#define FIRST_LEVEL 0
 
 
 // This file defines globals that can be used all over. You'll want common things in here, as the NES has very, very
@@ -59,8 +57,12 @@ extern const char lvl_details[4];
 extern unsigned char touchingVelcro, sheepRotation;
 extern unsigned char FRAME_COUNTER;
 extern unsigned char prettyLevel, prettyLives;
+extern char extendedSpriteData[56];
 
-extern unsigned char scratch;
+extern unsigned char currentSpriteId;
+extern unsigned char scratch, scratch2;
+extern unsigned int scratchInt;
+extern unsigned char tempX, tempY, tempPosition, tempSpriteId;
 
 // Crappy macro to get absolute value in an absolutely disgusting way
 // ps: Stolen from missing lands (again)
@@ -94,11 +96,18 @@ extern unsigned char scratch;
 #pragma zpsym ("sheepRotation")
 #pragma zpsym ("gameState")
 #pragma zpsym ("scratch")
+#pragma zpsym ("scratch2")
 #pragma zpsym ("sheepVelocityLock")
 #pragma zpsym ("prettyLevel")
 #pragma zpsym ("prettyLives")
+#pragma zpsym ("currentSpriteId")
+#pragma zpsym ("tempX")
+#pragma zpsym ("tempY")
+#pragma zpsym ("tempPosition")
+#pragma zpsym ("tempSpriteId")
+#pragma zpsym ("scratchInt")
 
-unsigned char test_collision(unsigned char tileId);
+unsigned char test_collision(unsigned char tileId, unsigned char isPlayer);
 
 void animate_fadeout(unsigned char _delay);
 void animate_fadein(unsigned char _delay);
@@ -109,3 +118,5 @@ void do_sheep_movement();
 void draw_sprites();
 void put_str(unsigned int adr, const char *str);
 void do_pause();
+void update_sprites();
+void do_sprite_collision();
