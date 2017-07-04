@@ -5,6 +5,7 @@
 #include "src/level_manip.h"
 #include "src/movement.h"
 #include "src/sprites.h"
+#include "graphics/title_rle.h"
 #include "levels/processed/lvl1_tiles.h"
 
 // Suggestion: Define smart names for your banks and use defines like this. 
@@ -127,27 +128,53 @@ void write_screen_buffer(unsigned char x, unsigned char y, char* data) {
 }
 
 void show_title() {
-	// TODO: Load palette file
-	pal_col(1,0x16);//set dark red color
-	pal_col(17,0x16);
 	music_play(SONG_TITLE);
 	music_pause(0);
 
 
 	// Show a message to the user.
-	put_str(NTADR_A(9,8), "Dizzy  Sheep");
-	put_str(NTADR_A(9,10), "  Disaster");
-	put_str(NTADR_A(7,20), "- Press Start -");
+	pal_bg(game_palette);
+	pal_spr(sprite_palette);
+	vram_adr(NAMETABLE_A);
+	vram_unrle(title_rle);
 
 	// Also show some cool build info because we can.
-	put_str(NTADR_A(2,24), "Built: " BUILD_DATE);
-	put_str(NTADR_A(2,25), "Build #" BUILD_NUMBER_STR " (" GIT_COMMIT_ID_SHORT " - " GIT_BRANCH ")");
-	put_str(NTADR_A(2,26), "Commit counter: " COMMIT_COUNT_STR);
-	ppu_on_bg();
+	put_str(NTADR_A(2,25), "Built: " BUILD_DATE);
+	put_str(NTADR_A(2,26), "Build #" BUILD_NUMBER_STR " (" GIT_COMMIT_ID_SHORT " - " GIT_BRANCH ")");
+	put_str(NTADR_A(2,27), "Commit counter: " COMMIT_COUNT_STR);
+	ppu_on_all();
+
+	sheepX = 1280;
+	sheepY = 1880;
+	sheepXlo = 80;
+	sheepYlo = 136;
+	magnetX = 0xf0;
+	magnetY = 0xf0;
+	// We have a copy of this room at 0x62 in the map... use it to load up a collision table.
+	set_prg_bank(PRG_FIRST_LEVEL);
+	memcpy(currentLevel, lvl1 + (62 << 8), 256);
+
+
 
 	while (!(pad_trigger(0) & PAD_A+PAD_START)) {
+		if (!(FRAME_COUNTER & 32)) {
+			tempX = rand8();
+			tempY = rand8();
+		}
+		magnetX = tempX;
+		magnetY = tempY;
+		do_sheep_movement();
+		if (abs(sheepXVel) > 1 || abs(sheepYVel) > 1) {
+			sheepRotation = ((FRAME_COUNTER >> 2) & 0xfe) % 16;
+		}
+
+		magnetX = 0xf0;
+		magnetY = 0xf0;
+		oam_hide_rest(FIRST_ENEMY_SPRITE_ID);
+		draw_sprites();
 		ppu_wait_nmi();
 	}
+	oam_hide_rest(0); // BYE SPRITES
 	sfx_play(SFX_BOOP_UP, 0);
 	animate_fadeout(5);
 	music_play(SONG_GAME_1);
