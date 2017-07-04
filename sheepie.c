@@ -91,11 +91,13 @@ unsigned char tempX2, tempY2;
 unsigned char sheepVelocityLock;
 unsigned char prettyLevel, prettyLives;
 unsigned int scratchInt;
+unsigned char magnetSpeed, magnetDirection;
 
 // Local to this file.
 static unsigned char playMusic;
 static unsigned char chrBank;
 static unsigned char mirrorMode;
+
 char screenBuffer[0x30];
 #pragma bssseg (pop)
 #pragma dataseg(pop)
@@ -298,6 +300,7 @@ void show_level_failed() {
 void show_level() {
 	magnetPos = (128-32);
 	magnetPosAbs = 1;
+	magnetSpeed = MAGNET_SPEED_1;
 	sheepXVel = 0;
 	sheepYVel = 0;
 	sheepVelocityLock = 0;
@@ -329,24 +332,40 @@ void show_level() {
 }
 
 void do_magnet_movement() {
-	if (currentPadState & PAD_LEFT) {
-		magnetPos-=2;
 
-		if ((magnetPos & 254) == 254) {
-			magnetPos = 128;
-			magnetPosAbs = !magnetPosAbs;
+	#if MAGNET_CONTROL 
+		if (currentPadState & PAD_LEFT) {
+			magnetPos-=2;
+
+			if ((magnetPos & 254) == 254) {
+				magnetPos = 128;
+				magnetPosAbs = !magnetPosAbs;
+			}
+
+
+		} else if (currentPadState & PAD_RIGHT) {
+			magnetPos+=2;
+			if ((magnetPos & 254) == 254) {
+				magnetPos = 0;
+				magnetPosAbs = !magnetPosAbs;
+			}
+		}
+	#else 
+		magnetPos += magnetSpeed;
+		if (magnetSpeed > 0) {
+			if ((magnetPos & 254) == 128) {
+				magnetPos = 0;
+				magnetPosAbs = !magnetPosAbs;
+			}
+		} else if (magnetSpeed < 0) {
+			if ((magnetPos & 254) == 254) {
+				magnetPos = 128;
+				magnetPosAbs = !magnetPosAbs;
+			}
+
 		}
 
-
-	} else if (currentPadState & PAD_RIGHT) {
-		magnetPos+=2;
-		if ((magnetPos & 254) == 128) {
-			magnetPos = 0;
-			magnetPosAbs = !magnetPosAbs;
-		}
-
-
-	}
+	#endif
 
 	if (magnetPosAbs) {
 		magnetX = sine[magnetPos+32];

@@ -32,7 +32,12 @@
 #define BOOST_SPEED 60
 
 #define NUMBER_OF_LEVELS 10
-#define FIRST_LEVEL 0
+#define FIRST_LEVEL 9
+
+#define MAGNET_CONTROL 0
+#define MAGNET_SPEED_1 1
+#define MAGNET_SPEED_2 2
+#define MAGNET_SPEED_3 4
 
 
 // This file defines globals that can be used all over. You'll want common things in here, as the NES has very, very
@@ -64,6 +69,7 @@ extern unsigned char currentSpriteId;
 extern unsigned char scratch, scratch2;
 extern unsigned int scratchInt;
 extern unsigned char tempX, tempY, tempPosition, tempSpriteId;
+extern unsigned char magnetSpeed, magnetDirection;
 
 // Crappy macro to get absolute value in an absolutely disgusting way
 // ps: Stolen from missing lands (again)
@@ -109,6 +115,8 @@ extern unsigned char tempX, tempY, tempPosition, tempSpriteId;
 #pragma zpsym ("tempPosition")
 #pragma zpsym ("tempSpriteId")
 #pragma zpsym ("scratchInt")
+#pragma zpsym ("magnetDirection")
+#pragma zpsym ("magnetSpeed")
 
 unsigned char test_collision(unsigned char tileId, unsigned char isPlayer);
 
