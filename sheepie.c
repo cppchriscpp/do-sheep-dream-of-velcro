@@ -203,21 +203,21 @@ void show_level_finished() {
 void show_game_finished() {
 	music_pause(1);
 	animate_fadeout(5);
+	set_vram_update(NULL);
 	ppu_off();
 
 	// Show a message to the user.
 	pal_bg(game_palette);
 	pal_spr(sprite_palette);
+	clear_screen();
 	vram_adr(NAMETABLE_A);
 	vram_unrle(credits_rle);
 	oam_hide_rest(0);
 
 	// Also show some cool build info because we can.
-	// Bah, for some stupid reason part of the text on the bottom is being cut... let's just show the
-	// build date.
-	put_str(NTADR_A(2,27), "Built: " BUILD_DATE);
-	// put_str(NTADR_A(2,27), "Build #" BUILD_NUMBER_STR " (" GIT_COMMIT_ID_SHORT " - " GIT_BRANCH ")");
-	// put_str(NTADR_A(2,27), "Commit counter: " COMMIT_COUNT_STR);
+	put_str(NTADR_A(3,25), "Built " BUILD_DATE);
+	put_str(NTADR_A(3,24), "Build #" BUILD_NUMBER_STR " (" GIT_COMMIT_ID_SHORT "-" GIT_BRANCH ")");
+	put_str(NTADR_A(3,23), "Commit counter: " COMMIT_COUNT_STR);
 
 	vram_adr(NTADR_A(18, 16));
 	vram_put(('0' + (prettyLives >> 4)) - 0x20);
@@ -448,17 +448,18 @@ void main(void) {
 			show_level();
 			gameState = GAME_STATE_RUNNING;
 		} else if (gameState == GAME_STATE_LEVEL_COMPLETE) {
-			show_level_finished();
 			playerOverworldPosition++;
 			prettyLevel++;
+			if (playerOverworldPosition == NUMBER_OF_LEVELS) {
+				gameState = GAME_STATE_WIN;
+				continue;
+			}
+			show_level_finished();
 			if ((prettyLevel & 0x0f) == 10) {
 				prettyLevel += 6;
 			}
-			if (playerOverworldPosition == NUMBER_OF_LEVELS) {
-				gameState = GAME_STATE_WIN;
-			} else {
-				gameState = GAME_STATE_START_LEVEL;
-			}
+			gameState = GAME_STATE_START_LEVEL;
+			
 		} else if (gameState == GAME_STATE_LEVEL_FAILED) {
 			show_level_failed();
 			++prettyLives;
