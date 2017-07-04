@@ -47,6 +47,7 @@ extern unsigned char magnetX, magnetY;
 extern int sheepXVel, sheepYVel;
 extern unsigned char sheepXlo, sheepYlo, sheepXRlo, sheepYBlo;
 extern int sheepX, sheepY, sheepXnext, sheepYnext, magnetXhi, magnetYhi;
+extern unsigned char tempX2, tempY2;
 
 extern unsigned char game_palette[16];
 extern unsigned char sprite_palette[16];
@@ -103,6 +104,8 @@ extern unsigned char tempX, tempY, tempPosition, tempSpriteId;
 #pragma zpsym ("currentSpriteId")
 #pragma zpsym ("tempX")
 #pragma zpsym ("tempY")
+#pragma zpsym ("tempX2")
+#pragma zpsym ("tempY2")
 #pragma zpsym ("tempPosition")
 #pragma zpsym ("tempSpriteId")
 #pragma zpsym ("scratchInt")

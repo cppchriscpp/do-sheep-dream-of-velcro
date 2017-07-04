@@ -13,7 +13,11 @@ const unsigned char sprite_data[] = {
 	SPRITE_TYPE_SLIDER_UD, SPRITE_SIZE_NORMAL | SPRITE_PALETTE_0, 0x64, 1,
 	SPRITE_TYPE_SLIDER_LR, SPRITE_SIZE_NORMAL | SPRITE_PALETTE_0, 0x64, 1,
 	SPRITE_TYPE_SLIDER_UD, SPRITE_SIZE_NORMAL | SPRITE_PALETTE_0, 0x64, 2,
-	SPRITE_TYPE_SLIDER_LR, SPRITE_SIZE_NORMAL | SPRITE_PALETTE_0, 0x64, 2
+	SPRITE_TYPE_SLIDER_LR, SPRITE_SIZE_NORMAL | SPRITE_PALETTE_0, 0x64, 2,
+	SPRITE_TYPE_MAGNET_SLIDER, SPRITE_SIZE_NORMAL | SPRITE_PALETTE_1, 0x64, 1,
+	SPRITE_TYPE_MAGNET_SLIDER, SPRITE_SIZE_NORMAL | SPRITE_PALETTE_1, 0x64, 2,
+	SPRITE_TYPE_CHASE_SLIDER, SPRITE_SIZE_NORMAL | SPRITE_PALETTE_2, 0x64, 1,
+	SPRITE_TYPE_CHASE_SLIDER, SPRITE_SIZE_NORMAL | SPRITE_PALETTE_2, 0x64, 2
 };
 
 void banked_draw_sprites() {
@@ -104,6 +108,61 @@ void banked_update_sprites() {
 				}
 			}
 
+		} else if (extendedSpriteData[i<<2] == SPRITE_TYPE_CHASE_SLIDER || extendedSpriteData[i<<2] == SPRITE_TYPE_MAGNET_SLIDER) {
+			// Set tempX2 and tempY2 to desired locations.
+			tempX2 = tempX;
+			tempY2 = tempY;
+			if (extendedSpriteData[i<<2] == SPRITE_TYPE_CHASE_SLIDER) {
+				if (tempX > sheepXlo) {
+					tempX2 -= SPRITE_MOVEMENT_SPEED*(extendedSpriteData[(i<<2)+3]);
+				} else if (tempX < sheepXlo) {
+					tempX2 += SPRITE_MOVEMENT_SPEED*(extendedSpriteData[(i<<2)+3]);
+				}
+
+				if (tempY > sheepYlo) {
+					tempY2 -= SPRITE_MOVEMENT_SPEED*(extendedSpriteData[(i<<2)+3]);
+				} else if (tempY < sheepYlo) {
+					tempY2 += SPRITE_MOVEMENT_SPEED*(extendedSpriteData[(i<<2)+3]);
+				}
+			} else {
+				if (tempX > magnetX) {
+					tempX2 -= SPRITE_MOVEMENT_SPEED*(extendedSpriteData[(i<<2)+3]);
+				} else if (tempX < magnetX) {
+					tempX2 += SPRITE_MOVEMENT_SPEED*(extendedSpriteData[(i<<2)+3]);
+				}
+
+				if (tempY > magnetY) {
+					tempY2 -= SPRITE_MOVEMENT_SPEED*(extendedSpriteData[(i<<2)+3]);
+				} else if (tempY < magnetY) {
+					tempY2 += SPRITE_MOVEMENT_SPEED*(extendedSpriteData[(i<<2)+3]);
+				}
+			}
+
+			// Okay, we've got our new and old positions... do we hit anything, or can we just move it?
+			if (tempX2 < tempX) {
+				if (test_collision(currentLevel[((tempX2)>>4)+((((tempY)>>4))<<4)], 0) || test_collision(currentLevel[((tempX2)>>4)+((((tempY+SPRITE_HEIGHT)>>4))<<4)], 0)) {
+					// If you hit, force back to original position.
+					tempX2 = tempX;
+				}
+
+			} else if (tempX2 > tempX) {
+				if (test_collision(currentLevel[((tempX2+SPRITE_WIDTH)>>4)+((((tempY)>>4))<<4)], 0) || test_collision(currentLevel[((tempX2+SPRITE_WIDTH)>>4)+((((tempY+SPRITE_HEIGHT)>>4))<<4)], 0)) {
+					tempX2 = tempX;
+				}
+			}
+
+			if (tempY2 > tempY) {
+				if (test_collision(currentLevel[((tempX)>>4)+((((tempY2+SPRITE_HEIGHT)>>4))<<4)], 0) || test_collision(currentLevel[((tempX+SPRITE_WIDTH)>>4)+((((tempY2+SPRITE_HEIGHT)>>4))<<4)], 0)) {
+					tempY2 = tempY;
+				}
+			} else if (tempY2 < tempY) {
+				if (test_collision(currentLevel[((tempX)>>4)+((((tempY2)>>4))<<4)], 0) || test_collision(currentLevel[((tempX+SPRITE_WIDTH)>>4)+((((tempY2)>>4))<<4)], 0)) {
+					tempY2 = tempY;
+				}
+			}
+
+			tempX = tempX2;
+			tempY = tempY2;
 		}
 
 		*(unsigned char*)(scratchInt) = tempY;

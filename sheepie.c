@@ -87,6 +87,7 @@ int sheepXVel, sheepYVel;
 unsigned char touchingVelcro;
 unsigned char scratch, scratch2;
 unsigned char tempX, tempY, tempPosition, tempSpriteId;
+unsigned char tempX2, tempY2;
 unsigned char sheepVelocityLock;
 unsigned char prettyLevel, prettyLives;
 unsigned int scratchInt;
