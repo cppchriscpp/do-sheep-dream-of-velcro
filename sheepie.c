@@ -29,6 +29,7 @@
 #define SFX_SUCCESS 1
 #define SFX_BOOP_DOWN 3
 #define SFX_BOOP_UP 2
+#define SFX_MENU_BOOP 4
 
 // TODO: Why on earth is this necessary?
 #pragma bssseg (push,"BSS")
@@ -472,8 +473,10 @@ void show_pause() {
 
 		if (staticPadState & PAD_DOWN && scratch < 2) {
 			++scratch;
+			sfx_play(SFX_MENU_BOOP, 1);
 		} else if (staticPadState & PAD_UP && scratch > 0) {
 			--scratch;
+			sfx_play(SFX_MENU_BOOP, 1);
 		}
 
 		screenBuffer[0] = MSB(NTADR_B(8, 16));
