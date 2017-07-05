@@ -34,6 +34,7 @@
 #define TILE_SPEED_3 47
 #define BOOST_LOCK_TIME 40
 #define BOOST_SPEED 60
+#define TILE_ARROW 0x3c
 
 #define NUMBER_OF_LEVELS 20
 #define FIRST_LEVEL 0

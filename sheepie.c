@@ -7,6 +7,7 @@
 #include "src/sprites.h"
 #include "graphics/title_rle.h"
 #include "graphics/credits_rle.h"
+#include "graphics/pause_rle.h"
 #include "levels/processed/lvl1_tiles.h"
 
 // Suggestion: Define smart names for your banks and use defines like this. 
@@ -321,6 +322,8 @@ void show_level() {
 
 	// NOTE: Yes, this says lvl1 - it'll line up with whatever we get though.
 	memcpy(currentLevel, lvl1 + (playerOverworldPosition << 8), 256);
+	vram_adr(NAMETABLE_B);
+	vram_unrle(pause_rle);
 
 	set_prg_bank(PRG_LEVELMANIP);
 	banked_draw_level();
@@ -446,6 +449,73 @@ unsigned char test_collision(unsigned char tileId, unsigned char isPlayer) {
 	}
 }
 
+void inc_lives() {
+	++prettyLives;
+	if ((prettyLives & 0x0f) == 10) {
+		prettyLives += 6;
+	}
+}
+
+void show_pause() {
+	sfx_play(SFX_BOOP_UP, 0);
+	animate_fadeout(5);
+	ppu_off();
+	ppu_on_bg();
+	scroll(255, 0);
+	animate_fadein(5);
+	scratch = 0;
+	while (1) {
+		staticPadState = pad_trigger(0); 
+		if (staticPadState & (PAD_START | PAD_A)) {
+			break;
+		}
+
+		if (staticPadState & PAD_DOWN && scratch < 2) {
+			++scratch;
+		} else if (staticPadState & PAD_UP && scratch > 0) {
+			--scratch;
+		}
+
+		screenBuffer[0] = MSB(NTADR_B(8, 16));
+		screenBuffer[1] = LSB(NTADR_B(8, 16));
+		screenBuffer[2] = scratch == 0 ? TILE_ARROW : 0;
+		screenBuffer[3] = MSB(NTADR_B(8, 18));
+		screenBuffer[4] = LSB(NTADR_B(8, 18));
+		screenBuffer[5] = scratch == 1 ? TILE_ARROW : 0;
+		screenBuffer[6] = MSB(NTADR_B(8, 20));
+		screenBuffer[7] = LSB(NTADR_B(8, 20));
+		screenBuffer[8] = scratch == 2 ? TILE_ARROW : 0;
+		screenBuffer[9] = NT_UPD_EOF;
+		set_vram_update(screenBuffer);
+		ppu_wait_nmi();
+
+	}
+	set_vram_update(NULL);
+	sfx_play(SFX_BOOP_DOWN, 0);
+	animate_fadeout(5);
+	ppu_off();
+	ppu_on_all();
+	scroll(0, 0);
+	if (staticPadState & PAD_A) {
+		if (scratch == 1) {
+			inc_lives();
+			oam_hide_rest(0);
+			gameState = GAME_STATE_START_LEVEL;
+			return;
+		} else if (scratch == 2) {
+			gameState = GAME_STATE_INIT;
+			ppu_off();
+			clear_screen();
+			animate_fadein(1);
+			return;
+		}
+	}
+	animate_fadein(5);
+	gameState = GAME_STATE_RUNNING;
+
+	
+}
+
 // Main entry point for the application.
 void main(void) {
 
@@ -489,14 +559,13 @@ void main(void) {
 			
 		} else if (gameState == GAME_STATE_LEVEL_FAILED) {
 			show_level_failed();
-			++prettyLives;
-			if ((prettyLives & 0x0f) == 10) {
-				prettyLives += 6;
-			}
+			inc_lives();
 			gameState = GAME_STATE_START_LEVEL;
 		} else if (gameState == GAME_STATE_WIN) { 
 			show_game_finished();
 			gameState = GAME_STATE_INIT;
+		} else if (gameState == GAME_STATE_PAUSE) {
+			show_pause();
 		} else if (gameState == GAME_STATE_RUNNING) {
 			do_magnet_movement();
 			do_sheep_movement();
@@ -512,6 +581,10 @@ void main(void) {
 				sheepRotation = ((FRAME_COUNTER >> 2) & 0xfe) % 16;
 			}
 
+			if (staticPadState & PAD_START) {
+				gameState = GAME_STATE_PAUSE;
+			}
+
 			draw_sprites();
 		}
 		ppu_wait_nmi();
@@ -521,18 +594,6 @@ void main(void) {
 void update_sprites() {
 	set_prg_bank(PRG_SPRITES);
 	banked_update_sprites();
-}
-
-// NOTE: Half written... not trivial to write sadly; gonna leave it out unless we really need it.
-void do_pause() {
-	sfx_play(SFX_BOOP_UP, 0);
-	animate_fadeout(5);
-
-
-	while (!(pad_trigger(0) & PAD_START)) {
-		ppu_wait_nmi();
-	}
-	animate_fadein(5);
 }
 
 void animate_fadeout(unsigned char _delay) {
