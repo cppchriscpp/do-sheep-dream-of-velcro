@@ -30,6 +30,8 @@ void banked_draw_sprites() {
 
 		tempPosition = currentLevel[MAP_TILE_SIZE + (i<<1)];
 		tempSpriteId = currentLevel[MAP_TILE_SIZE + (i<<1)+1];
+		tempY = (tempPosition >> 4) << 4;
+		tempX = ((tempPosition % 16) << 4);
 
 		if (tempSpriteId == SPRITE_TYPE_LEVEL_START) {
 			// Position to be unpacked
@@ -37,6 +39,8 @@ void banked_draw_sprites() {
 			sheepX = (tempPosition % 16) << 8;
 			sheepYlo = sheepY >> 4;
 			sheepXlo = sheepX >> 4;
+			// Aaaand, let's not have this count against our sprite limit, because that's silly.
+			tempX = tempY = NESLIB_SPRITE_GONE;
 		}
 
 
@@ -45,8 +49,6 @@ void banked_draw_sprites() {
 		extendedSpriteData[(i<<2)+2] = sprite_data[(tempSpriteId<<2)+2];
 		extendedSpriteData[(i<<2)+3] = sprite_data[(tempSpriteId<<2)+3];
 
-		tempY = (tempPosition >> 4) << 4;
-		tempX = ((tempPosition % 16) << 4);
 		// Man this logic is ugly... get the palette using some science and such
 		scratch = sprite_data[((currentLevel[MAP_TILE_SIZE + (i<<1)+1])<<2)+1] & SPRITE_PALETTE_MASK;
 		scratch2 = extendedSpriteData[(i<<2)+2];

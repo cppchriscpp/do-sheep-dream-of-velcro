@@ -91,7 +91,8 @@ unsigned char tempX2, tempY2;
 unsigned char sheepVelocityLock;
 unsigned char prettyLevel, prettyLives;
 unsigned int scratchInt;
-unsigned char magnetSpeed, magnetDirection;
+char magnetSpeed;
+unsigned char magnetDirection, magnetDirectionLock;
 
 // Local to this file.
 static unsigned char playMusic;
@@ -301,6 +302,7 @@ void show_level() {
 	magnetPos = (128-32);
 	magnetPosAbs = 1;
 	magnetSpeed = MAGNET_SPEED_1;
+	magnetDirection = 0;
 	sheepXVel = 0;
 	sheepYVel = 0;
 	sheepVelocityLock = 0;
@@ -351,15 +353,19 @@ void do_magnet_movement() {
 			}
 		}
 	#else 
-		magnetPos += magnetSpeed;
-		if (magnetSpeed > 0) {
-			if ((magnetPos & 254) == 128) {
+		if (magnetDirection == 0)
+			magnetPos += magnetSpeed;
+		else
+			magnetPos -= magnetSpeed;
+
+		if (magnetDirection == 0) {
+			if (magnetPos > 128) {
 				magnetPos = 0;
 				magnetPosAbs = !magnetPosAbs;
 			}
-		} else if (magnetSpeed < 0) {
-			if ((magnetPos & 254) == 254) {
-				magnetPos = 128;
+		} else {
+			if (magnetPos >= 240) {
+				magnetPos = 128-magnetSpeed;
 				magnetPosAbs = !magnetPosAbs;
 			}
 
@@ -432,6 +438,7 @@ unsigned char test_collision(unsigned char tileId, unsigned char isPlayer) {
 			return 0;
 		case 24:
 		case 25:
+		case 31:
 		case 58:
 			return 1;
 		default:

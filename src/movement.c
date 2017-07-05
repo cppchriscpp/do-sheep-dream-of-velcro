@@ -168,10 +168,21 @@ void do_banked_movement() {
 		} else if (scratch == TILE_BOOST_U) {
 			sheepYVel = -BOOST_SPEED; // VROOM
 			sheepVelocityLock = BOOST_LOCK_TIME;
+		} else if (scratch == TILE_DIRECTION_SWAP && !magnetDirectionLock) {
+			magnetDirection = !magnetDirection;
+			magnetDirectionLock = MAGNET_DIRECTION_LOCK;
+		} else if (scratch == TILE_SPEED_1) {
+			magnetSpeed = (magnetSpeed > 0 ? MAGNET_SPEED_1 : -MAGNET_SPEED_1);
+		} else if (scratch == TILE_SPEED_2) {
+			magnetSpeed = (magnetSpeed > 0 ? MAGNET_SPEED_2 : -MAGNET_SPEED_2);
+		} else if (scratch == TILE_SPEED_3) {
+			magnetSpeed = (magnetSpeed > 0 ? MAGNET_SPEED_3 : -MAGNET_SPEED_3);
 		}
 		
 	}
 
+	if (magnetDirectionLock > 0)
+		--magnetDirectionLock;
 
 
 	sheepXlo = sheepX >> 4;
