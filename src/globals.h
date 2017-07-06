@@ -36,7 +36,7 @@
 #define BOOST_SPEED 60
 #define TILE_ARROW 0x3c
 
-#define NUMBER_OF_LEVELS 20
+#define NUMBER_OF_LEVELS 21
 #define FIRST_LEVEL 0
 #define MAGNET_DIRECTION_LOCK 60
 
