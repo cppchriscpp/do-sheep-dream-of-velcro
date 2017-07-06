@@ -8,6 +8,7 @@
 #include "graphics/title_rle.h"
 #include "graphics/credits_rle.h"
 #include "graphics/pause_rle.h"
+#include "graphics/halp_rle.h"
 #include "levels/processed/lvl1_tiles.h"
 
 // Suggestion: Define smart names for your banks and use defines like this. 
@@ -183,6 +184,19 @@ void show_title() {
 	}
 	oam_hide_rest(0); // BYE SPRITES
 	sfx_play(SFX_BOOP_UP, 0);
+	animate_fadeout(5);
+
+	ppu_off();
+	vram_adr(NAMETABLE_A);
+	vram_unrle(halp_rle);
+	ppu_on_all();
+	animate_fadein(5);
+	while (!(pad_trigger(0) & PAD_A+PAD_START)) {
+		ppu_wait_nmi();
+	}
+	sfx_play(SFX_BOOP_UP, 0);
+	
+
 	animate_fadeout(5);
 	music_play(SONG_GAME_1);
 	music_pause(1);

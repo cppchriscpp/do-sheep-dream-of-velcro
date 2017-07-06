@@ -69,7 +69,7 @@ void banked_draw_level() {
 void banked_draw_hold_a() {
 	write_screen_buffer(7, 27, "Hold A to hold on ");
 	i = 0;
-	while(i < 30) {
+	while(i < 10) {
 		currentPadState = pad_poll(0);
 		if (currentPadState & PAD_A) {
 			i++;
