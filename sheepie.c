@@ -25,6 +25,7 @@
 
 #define SONG_TITLE 0
 #define SONG_GAME_1 1
+#define SONG_GAME_END 4
 
 #define SFX_BOOM 0
 #define SFX_SUCCESS 1
@@ -226,6 +227,8 @@ void show_game_finished() {
 	animate_fadeout(5);
 	set_vram_update(NULL);
 	ppu_off();
+	music_play(SONG_GAME_END);
+	music_pause(0);
 
 	// Show a message to the user.
 	pal_bg(game_palette);
