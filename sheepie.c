@@ -9,6 +9,8 @@
 #include "graphics/credits_rle.h"
 #include "graphics/pause_rle.h"
 #include "graphics/halp_rle.h"
+#include "graphics/sheared_rle.h"
+#include "graphics/complete_rle.h"
 #include "levels/processed/lvl1_tiles.h"
 
 // Suggestion: Define smart names for your banks and use defines like this. 
@@ -209,15 +211,14 @@ void show_level_finished() {
 	sfx_play(SFX_SUCCESS, 0);
 	animate_fadeout(5);
 	ppu_off();
-	pal_col(1,0x16);//set dark red color
-	pal_col(17,0x16);
 
 	clear_screen();
 	oam_hide_rest(0);
-	put_str(NTADR_A(8, 12), "Level complete!");
+	vram_adr(NAMETABLE_A);
+	vram_unrle(complete_rle);
 	ppu_on_bg();
 	animate_fadein(5);
-	delay_or_button(60);
+	delay_or_button(120);
 	animate_fadeout(5);
 	ppu_on_all();
 }
@@ -303,16 +304,14 @@ void show_level_failed() {
 	music_pause(1);
 	animate_fadeout(5);
 	ppu_off();
-	pal_col(1,0x16);//set dark red color
-	pal_col(17,0x16);
 
 	clear_screen();
 	oam_hide_rest(0);
-	put_str(NTADR_A(8, 12), "Your sheep");
-	put_str(NTADR_A(8, 14), "is sheared!");
+	vram_adr(NAMETABLE_A);
+	vram_unrle(sheared_rle);
 	ppu_on_bg();
 	animate_fadein(5);
-	delay_or_button(60);
+	delay_or_button(120);
 	animate_fadeout(5);
 	ppu_on_all();
 }
@@ -640,7 +639,7 @@ void animate_fadein(unsigned char _delay) {
 
 void delay_or_button(unsigned char _delay) {
 	for (i = 0; i < _delay; ++i) {
-		if (pad_trigger(1) & (PAD_A | PAD_START)) {
+		if (i > 10 && pad_trigger(0) & (PAD_A | PAD_START)) {
 			break;
 		}
 		++i;
