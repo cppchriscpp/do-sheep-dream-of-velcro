@@ -9,7 +9,7 @@ Controls/etc on the first screen of the game! Just press start on the first page
 
 # Compiling 
 
-Based off of [nes-c-boilerplate](https://github.com/cppchriscpp/nes-c-boilerplate
+Based off of [nes-c-boilerplate](https://github.com/cppchriscpp/nes-c-boilerplate)
 Please follow the compilation steps in README.md for that project.
 *Note*: You will also need to install nodejs 6.x for the map converter tool. (4.x may work too)
 
