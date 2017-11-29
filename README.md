@@ -25,5 +25,5 @@ Last CI build off master:
 
 [![CircleCI](https://circleci.com/gh/cppchriscpp/do-sheep-dream-of-velcro.svg?style=svg)](https://circleci.com/gh/cppchriscpp/do-sheep-dream-of-velcro)
 
-[Current ROM](https://circleci-tkn.rhcloud.com/api/v1/project/cppchriscpp/do-sheep-dream-of-velcro/tree/master/latest/artifacts/sheepie.nes)
+[Current ROM](http://cpprograms.net/devnull/circleci-redirect.php?namespace=cppchriscpp&project=do-sheep-dream-of-velcro&file=sheepie.nes)
 
